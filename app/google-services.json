@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "967169874919",
+    "firebase_url": "https://findworker-9c850-default-rtdb.firebaseio.com",
+    "project_id": "findworker-9c850",
+    "storage_bucket": "findworker-9c850.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:967169874919:android:5006903b52f3cc3468fb42",
+        "android_client_info": {
+          "package_name": "com.example.findworker"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "967169874919-gehrtkm0iehvmqca15lf0qpro306lkuv.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBvqSh-NZ-5lLaldmkj_XIaftdTSVB6Zr8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "967169874919-gehrtkm0iehvmqca15lf0qpro306lkuv.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
