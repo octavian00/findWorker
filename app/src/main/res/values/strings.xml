@@ -5,4 +5,7 @@
         <item>Electrician</item>
         <item>Other</item>
     </string-array>
+    <string name="facebook_app_id">749037399334689</string>
+    <string name="fb_login_protocol_scheme">fb749037399334689</string>
+
 </resources>
