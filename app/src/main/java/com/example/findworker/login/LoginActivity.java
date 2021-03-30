@@ -25,15 +25,19 @@ import com.facebook.login.LoginResult;
 import com.facebook.login.widget.LoginButton;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.AuthResult;
+import com.google.firebase.auth.FacebookAuthProvider;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
 import org.json.JSONException;
 
+import java.util.Arrays;
 
 
 public class LoginActivity extends AppCompatActivity {
+    private static final String TAG = "LoginActivity";
     private Button logInButton, createAccountButton;
     private EditText emailInput, passwordInput;
     private FirebaseAuth firebaseAuth;
@@ -53,23 +57,43 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void facebookRegister() {
-        // loginButton.setPermissions(Arrays.asList("user_friends"));
+        Log.d(TAG,"facebookRegister");
+        loginButton.setPermissions(Arrays.asList("email"));
         loginButton.registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
             @Override
             public void onSuccess(LoginResult loginResult) {
-                Log.d("ZUZU register","SUCCESS");
+                Log.d(TAG,"register SUCCESS");
+                handleFacebookAccessToken(loginResult.getAccessToken());
+
             }
 
             @Override
             public void onCancel() {
-                Log.d("ZUZU register","CANCEL");
+                Log.d(TAG,"register CANCEL");
             }
 
             @Override
             public void onError(FacebookException error) {
-                Log.d("ZUZU register","ERROR");
+                Log.d(TAG,"register ERROR");
             }
         });
+    }
+
+    private void handleFacebookAccessToken(AccessToken accessToken) {
+        Log.d(TAG,"handleFacebookAccessToken"+accessToken);
+        AuthCredential credential = FacebookAuthProvider.getCredential(accessToken.getToken());
+        Log.d(TAG,"credential"+credential);
+        Toast.makeText(getBaseContext(), credential.toString(), Toast.LENGTH_SHORT).show();
+        firebaseAuth.signInWithCredential(credential)
+                .addOnCompleteListener(this, task -> {
+                    if(task.isSuccessful()) {
+                        Log.d(TAG, "signIn with SUCCESS :)");
+                        FirebaseUser user = firebaseAuth.getCurrentUser();
+                        Log.d(TAG,"username "+user.getDisplayName()+" "+user.getEmail());
+                    }else{
+                        Log.d(TAG, "signIn with FAILED :(");
+                    }
+                });
     }
 
     private void initializeViews(){
@@ -91,20 +115,25 @@ public class LoginActivity extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
 
         // for read/write facebook user data
-        GraphRequest graphRequest = GraphRequest.newMeRequest(AccessToken.getCurrentAccessToken(), (object, response) -> {
-            Log.d("ZUZU graphRequest",object.toString());
-            //deserialize Json response
-            try {
-                String name = object.getString("name");
-                emailInput.setText(name);
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-        });
-        Bundle bundle = new Bundle();
-        bundle.putString("fields","gender, name, id, first_name, last_name");//this fields comes from facebook devolopers
-        graphRequest.setParameters(bundle);
-        graphRequest.executeAsync();
+//        GraphRequest graphRequest = GraphRequest.newMeRequest(AccessToken.getCurrentAccessToken(), (object, response) -> {
+//            Log.d("ZUZU graphRequest",object.toString());
+//            //deserialize Json response
+//            try {
+//                String name = object.getString("name");
+//                emailInput.setText(name);
+//            } catch (JSONException e) {
+//                e.printStackTrace();
+//            }
+//        });
+//        Bundle bundle = new Bundle();
+//        bundle.putString("fields","gender, name, id, first_name, last_name");//this fields comes from facebook devolopers
+//        graphRequest.setParameters(bundle);
+//        graphRequest.executeAsync();
+        Log.d(TAG,"onResult");
+//        GraphRequest graphRequest = GraphRequest.newMyFriendsRequest(AccessToken.getCurrentAccessToken(),((objects, response) -> {
+//            Log.d("FRIENDS",objects.toString());
+//        }));
+//        graphRequest.executeAsync();
     }
     AccessTokenTracker accessTokenTracker = new AccessTokenTracker() {
         @Override
