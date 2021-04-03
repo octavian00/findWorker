@@ -54,6 +54,7 @@ public class LoginActivity extends AppCompatActivity {
         initializeViews();
         initializeFirebaseInstances();
         facebookRegister();
+        Log.e("TAG","ZUZUZ");
     }
 
     private void facebookRegister() {
@@ -74,7 +75,7 @@ public class LoginActivity extends AppCompatActivity {
 
             @Override
             public void onError(FacebookException error) {
-                Log.d(TAG,"register ERROR");
+                Log.e(TAG,"register ERROR");
             }
         });
     }
