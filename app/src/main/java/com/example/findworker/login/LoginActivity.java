@@ -13,13 +13,14 @@ import android.widget.Toast;
 
 import com.example.findworker.MainActivity;
 import com.example.findworker.R;
+import com.example.findworker.SelectRole;
 import com.example.findworker.helpers.FirebaseHelper;
+import com.example.findworker.models.User;
 import com.facebook.AccessToken;
 import com.facebook.AccessTokenTracker;
 import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
 import com.facebook.FacebookException;
-import com.facebook.GraphRequest;
 import com.facebook.login.LoginManager;
 import com.facebook.login.LoginResult;
 import com.facebook.login.widget.LoginButton;
@@ -30,13 +31,21 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FacebookAuthProvider;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.ValueEventListener;
 
-import org.json.JSONException;
-
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
 
+import static com.example.findworker.helpers.LoggedUserData.loggedUserName;
+import static com.example.findworker.helpers.LoggedUserData.loggedUserEmail;
+import static com.example.findworker.helpers.LoggedUserData.regiserUserUUID;
 
-public class LoginActivity extends AppCompatActivity {
+public class  LoginActivity extends AppCompatActivity {
     private static final String TAG = "LoginActivity";
     private Button logInButton, createAccountButton;
     private EditText emailInput, passwordInput;
@@ -45,7 +54,7 @@ public class LoginActivity extends AppCompatActivity {
     private FirebaseHelper firebaseHelper;
     private CallbackManager callbackManager;
     private LoginButton loginButton;
-
+    private  Map<String,String> currentUserIdAndEmail;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,6 +63,7 @@ public class LoginActivity extends AppCompatActivity {
         initializeViews();
         initializeFirebaseInstances();
         facebookRegister();
+        currentUserIdAndEmail=getAllEmailsFromDB();
         Log.e("TAG","ZUZUZ");
     }
 
@@ -65,7 +75,7 @@ public class LoginActivity extends AppCompatActivity {
             public void onSuccess(LoginResult loginResult) {
                 Log.d(TAG,"register SUCCESS");
                 handleFacebookAccessToken(loginResult.getAccessToken());
-
+                Log.d(TAG,"Finish Handle");
             }
 
             @Override
@@ -89,12 +99,57 @@ public class LoginActivity extends AppCompatActivity {
                 .addOnCompleteListener(this, task -> {
                     if(task.isSuccessful()) {
                         Log.d(TAG, "signIn with SUCCESS :)");
-                        FirebaseUser user = firebaseAuth.getCurrentUser();
-                        Log.d(TAG,"username "+user.getDisplayName()+" "+user.getEmail());
+                        addUserToDB();
+                        roleActivity();
+                        Log.d(TAG,"username "+loggedUserName);
                     }else{
                         Log.d(TAG, "signIn with FAILED :(");
                     }
+                    Log.d(TAG,"Finish Handle=2");
                 });
+    }
+
+    private void addUserToDB() {
+
+        FirebaseUser user = firebaseAuth.getCurrentUser();
+        populateConstants(user);
+        Log.d(TAG,"username "+user.getDisplayName()+" "+user.getEmail()+"UUID"+user.getUid());
+        for(Map.Entry<String, String> s:currentUserIdAndEmail.entrySet()){
+           if(user.getEmail().equals(s.getValue())){
+               Log.d(TAG,"email Already exists");
+               regiserUserUUID = s.getKey();
+               return;
+           }
+        }
+
+        User registeredUser = new User(loggedUserEmail,loggedUserName);
+        Log.d(TAG,"loggedUserEmail="+loggedUserEmail+"loggedUserName="+loggedUserName+"regiserUserUUID="+regiserUserUUID);
+        firebaseHelper.userDatabaseReference.child(regiserUserUUID).setValue(registeredUser);
+
+    }
+    private void populateConstants(FirebaseUser user){
+        loggedUserName = user.getDisplayName();
+        loggedUserEmail = user.getEmail();
+        regiserUserUUID = user.getUid();
+    }
+    private Map<String,String> getAllEmailsFromDB(){
+        Map<String,String> idAndEmails = new HashMap<>();
+        FirebaseHelper.userDatabaseReference.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                 for(DataSnapshot dataSnapshot:snapshot.getChildren()){
+                     User user = dataSnapshot.getValue(User.class);
+                     idAndEmails.put(dataSnapshot.getKey(),user.getEmail());
+                     Log.d(TAG,"KEY:"+ idAndEmails.keySet());
+                 }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
+        return idAndEmails;
     }
 
     private void initializeViews(){
@@ -106,15 +161,13 @@ public class LoginActivity extends AppCompatActivity {
         logInButton = findViewById(R.id.logInButton);
         createAccountButton = findViewById(R.id.createAccountButton);
         loginButton = findViewById(R.id.login_button);
-
-
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         callbackManager.onActivityResult(requestCode, resultCode, data);
         super.onActivityResult(requestCode, resultCode, data);
-
+        //roleActivity();
         // for read/write facebook user data
 //        GraphRequest graphRequest = GraphRequest.newMeRequest(AccessToken.getCurrentAccessToken(), (object, response) -> {
 //            Log.d("ZUZU graphRequest",object.toString());
@@ -148,6 +201,7 @@ public class LoginActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        Log.d(TAG,"onDESTROY");
         accessTokenTracker.stopTracking();
     }
 
@@ -177,7 +231,6 @@ public class LoginActivity extends AppCompatActivity {
                             // If sign in fails, display a message to the user.
                             Toast.makeText(getBaseContext(), "Something went wrong :(", Toast.LENGTH_SHORT).show();
                         }
-
                     }
                 });
 
@@ -185,11 +238,14 @@ public class LoginActivity extends AppCompatActivity {
     private void nextActivity(){
         Intent intent = new Intent(this, MainActivity.class);
         startActivity(intent);
-
     }
 
     public void registerActivity(View view) {
         Intent intent = new Intent(this, RegisterActivity.class);
+        startActivity(intent);
+    }
+    public void roleActivity(){
+        Intent intent = new Intent(this, SelectRole.class);
         startActivity(intent);
     }
 }
