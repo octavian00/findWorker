@@ -11,7 +11,9 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.FindWorker">
-        <activity android:name=".SelectRole"></activity>
+        <activity android:name=".profile.DetaliedWorkerFromUser"></activity>
+        <activity android:name=".profile.UserProfile" />
+        <activity android:name=".SelectRole" />
         <activity android:name=".FillData" />
         <activity android:name=".WorkerUpdateInfo" />
         <activity android:name=".login.RegisterActivity" />

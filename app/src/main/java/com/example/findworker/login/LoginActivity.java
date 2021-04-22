@@ -4,6 +4,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -11,11 +12,13 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.example.findworker.FireBaseCallBack;
 import com.example.findworker.MainActivity;
 import com.example.findworker.R;
 import com.example.findworker.SelectRole;
 import com.example.findworker.helpers.FirebaseHelper;
 import com.example.findworker.models.User;
+import com.example.findworker.models.Worker;
 import com.facebook.AccessToken;
 import com.facebook.AccessTokenTracker;
 import com.facebook.CallbackManager;
@@ -38,6 +41,7 @@ import com.google.firebase.database.ValueEventListener;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -50,20 +54,26 @@ public class  LoginActivity extends AppCompatActivity {
     private Button logInButton, createAccountButton;
     private EditText emailInput, passwordInput;
     private FirebaseAuth firebaseAuth;
-    private FirebaseUser loggedUser;
     private FirebaseHelper firebaseHelper;
     private CallbackManager callbackManager;
     private LoginButton loginButton;
-    private  Map<String,String> currentUserIdAndEmail;
+    private  Map<String,Worker> currentUserIdAndEmail;
+    final Worker[] w = {new Worker()};
+    boolean isRoleActivity = false;
+    SharedPreferences prefs;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
         initializeViews();
+        initializeSharedPreference();
+        getFromShared();
         initializeFirebaseInstances();
+        getCurrentUser();
         facebookRegister();
         currentUserIdAndEmail=getAllEmailsFromDB();
+
         Log.e("TAG","ZUZUZ");
     }
 
@@ -89,7 +99,24 @@ public class  LoginActivity extends AppCompatActivity {
             }
         });
     }
+    private void initializeSharedPreference(){
+        prefs =getSharedPreferences("preference.txt",MODE_PRIVATE);
+    }
+    private void saveToSharedPreference(){
+        SharedPreferences.Editor editor = prefs.edit();
+        editor.putString("UUID",regiserUserUUID);
+        editor.apply();
+    }
+    private void getFromShared(){
+        String data = prefs.getString("UUID","");
+        if(data.isEmpty()){
+            Log.d(TAG,"getFromShared is empty");
+        }else{
+            regiserUserUUID =data;
+            Log.d(TAG,"Found UUID :)");
+        }
 
+    }
     private void handleFacebookAccessToken(AccessToken accessToken) {
         Log.d(TAG,"handleFacebookAccessToken"+accessToken);
         AuthCredential credential = FacebookAuthProvider.getCredential(accessToken.getToken());
@@ -100,7 +127,11 @@ public class  LoginActivity extends AppCompatActivity {
                     if(task.isSuccessful()) {
                         Log.d(TAG, "signIn with SUCCESS :)");
                         addUserToDB();
-                        roleActivity();
+                        if(!isRoleActivity)
+                        {
+                            roleActivity();
+                        }
+                        Log.d("ROLE=",isRoleActivity+"");
                         Log.d(TAG,"username "+loggedUserName);
                     }else{
                         Log.d(TAG, "signIn with FAILED :(");
@@ -113,11 +144,13 @@ public class  LoginActivity extends AppCompatActivity {
 
         FirebaseUser user = firebaseAuth.getCurrentUser();
         populateConstants(user);
+        saveToSharedPreference();
         Log.d(TAG,"username "+user.getDisplayName()+" "+user.getEmail()+"UUID"+user.getUid());
-        for(Map.Entry<String, String> s:currentUserIdAndEmail.entrySet()){
-           if(user.getEmail().equals(s.getValue())){
+        for(Map.Entry<String, Worker> s:currentUserIdAndEmail.entrySet()){
+           if(user.getEmail().equals(s.getValue().getEmail())){
                Log.d(TAG,"email Already exists");
                regiserUserUUID = s.getKey();
+                //currentWorker = firebaseAPI.getCurrentUser(regiserUserUUID);
                return;
            }
         }
@@ -132,14 +165,14 @@ public class  LoginActivity extends AppCompatActivity {
         loggedUserEmail = user.getEmail();
         regiserUserUUID = user.getUid();
     }
-    private Map<String,String> getAllEmailsFromDB(){
-        Map<String,String> idAndEmails = new HashMap<>();
+    private Map<String, Worker> getAllEmailsFromDB(){
+        Map<String,Worker> idAndEmails = new HashMap<>();
         FirebaseHelper.userDatabaseReference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                  for(DataSnapshot dataSnapshot:snapshot.getChildren()){
-                     User user = dataSnapshot.getValue(User.class);
-                     idAndEmails.put(dataSnapshot.getKey(),user.getEmail());
+                     Worker user = dataSnapshot.getValue(Worker.class);
+                     idAndEmails.put(dataSnapshot.getKey(),user);
                      Log.d(TAG,"KEY:"+ idAndEmails.keySet());
                  }
             }
@@ -197,7 +230,30 @@ public class  LoginActivity extends AppCompatActivity {
             }
         }
     };
+    public void  getCurrentUser(final FireBaseCallBack fireBaseCallBack, String UUID){
+        Log.d("TAG","START===="+UUID);
+        FirebaseHelper.userDatabaseReference.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                for(DataSnapshot dataSnapshot:snapshot.getChildren()){
+                    Log.d("TAG","uuidCUrent="+dataSnapshot.getKey());
+                    if(dataSnapshot.getKey().equals(UUID))
+                    {
+                        Log.d("TAG","GASESTE UUID");
+                        w[0] = dataSnapshot.getValue(Worker.class);
+                        fireBaseCallBack.onCallBack(w[0]);
+                        break;
+                        //Log.d("TAG","===="+ worker[0].getEmail());
+                    }
 
+                }
+            }
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
+    }
     @Override
     protected void onDestroy() {
         super.onDestroy();
@@ -247,5 +303,24 @@ public class  LoginActivity extends AppCompatActivity {
     public void roleActivity(){
         Intent intent = new Intent(this, SelectRole.class);
         startActivity(intent);
+    }
+    private  void getCurrentUser()
+    {
+        getCurrentUser(new FireBaseCallBack() {
+            @Override
+            public void onCallBack(Worker worker) {
+                if(worker.getJobTitle()!=null)
+                {
+                    Log.d("jobTitle","INTRA AICI");
+                    isRoleActivity = true;
+                }
+            }
+
+            @Override
+            public void onCallBackListOfWorkers(List<Worker> worker) {
+
+            }
+        },regiserUserUUID);
+
     }
 }

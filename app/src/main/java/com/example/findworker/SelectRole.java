@@ -9,6 +9,7 @@ import android.view.View;
 
 import com.example.findworker.helpers.FirebaseHelper;
 import com.example.findworker.models.Worker;
+import com.example.findworker.profile.UserProfile;
 
 import static com.example.findworker.helpers.LoggedUserData.loggedUserEmail;
 import static com.example.findworker.helpers.LoggedUserData.loggedUserName;
@@ -30,5 +31,9 @@ public class SelectRole extends AppCompatActivity {
         FirebaseHelper.userDatabaseReference.child(regiserUserUUID).setValue(worker);
         Log.d("ROLE=",worker.getEmail());
         startActivity(new Intent(getApplicationContext(),FillData.class));
+    }
+
+    public void userProfile(View view) {
+        startActivity(new Intent(getApplicationContext(), UserProfile.class));
     }
 }

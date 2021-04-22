@@ -1,11 +1,14 @@
 package com.example.findworker.models;
 
-public class Worker extends User{
+import java.io.Serializable;
+import java.util.ArrayList;
+
+public class Worker extends User implements Serializable {
     private String username;
     private String jobTitle;
     private Integer experience;
     private String location;
-    
+    public Worker(){}
     public Worker(String email, String username, String jobTitle) {
         super(email);
         this.username = username;
@@ -30,5 +33,8 @@ public class Worker extends User{
 
     public String getJobTitle() {
         return jobTitle;
+    }
+    public String showWorkersField(){
+        return "username"+this.getUsername()+"userEmail"+this.getEmail()+"jobTitle"+this.getJobTitle();
     }
 }

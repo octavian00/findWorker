@@ -5,18 +5,19 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:gravity="center"
-    android:layout_margin="20dp"
-    tools:context=".SelectRole">
+    tools:context=".profile.DetaliedWorkerFromUser">
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="zuu"
+        android:textAlignment="center"
+        android:id="@+id/tv_experiencee"/>
     <Button
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:onClick="workerUpdate"
-        android:text="I am here to provide a service"/>
-    <Button
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:onClick="userProfile"
-        android:text="I am here to provide a service"/>
+        android:text="Order"
+        android:layout_margin="20dp"
+        android:id="@+id/btn_order"
+        />
 
 </LinearLayout>
