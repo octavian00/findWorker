@@ -1,11 +1,18 @@
 package com.example.findworker.models;
 
 public class User {
-    private String email;
+    protected String email;
     private String password;
 
-    public User(String email, String password) {
-        this.email = email;
+    public User() {
+    }
+
+    public User(String username) {
+        this.email = username;
+    }
+
+    public User(String username, String password) {
+        this.email = username;
         this.password = password;
     }
 

@@ -4,6 +4,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -11,15 +12,21 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
-import com.example.findworker.MainActivity;
+import com.example.findworker.FillData;
+import com.example.findworker.FireBaseCallBack;
 import com.example.findworker.R;
+import com.example.findworker.SelectRole;
+import com.example.findworker.WorkerProfile;
 import com.example.findworker.helpers.FirebaseHelper;
+import com.example.findworker.models.User;
+import com.example.findworker.models.Worker;
+import com.example.findworker.models.WorkerOrders;
+import com.example.findworker.profile.UserProfile;
 import com.facebook.AccessToken;
 import com.facebook.AccessTokenTracker;
 import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
 import com.facebook.FacebookException;
-import com.facebook.GraphRequest;
 import com.facebook.login.LoginManager;
 import com.facebook.login.LoginResult;
 import com.facebook.login.widget.LoginButton;
@@ -30,30 +37,45 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FacebookAuthProvider;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-
-import org.json.JSONException;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.ValueEventListener;
 
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
+import static com.example.findworker.helpers.LoggedUserData.loggedUserName;
+import static com.example.findworker.helpers.LoggedUserData.loggedUserEmail;
+import static com.example.findworker.helpers.LoggedUserData.regiserUserUUID;
 
-public class LoginActivity extends AppCompatActivity {
+public class  LoginActivity extends AppCompatActivity {
     private static final String TAG = "LoginActivity";
     private Button logInButton, createAccountButton;
     private EditText emailInput, passwordInput;
     private FirebaseAuth firebaseAuth;
-    private FirebaseUser loggedUser;
     private FirebaseHelper firebaseHelper;
     private CallbackManager callbackManager;
     private LoginButton loginButton;
-
+    private  Map<String,Worker> currentUserIdAndEmail;
+    final Worker[] w = {new Worker()};
+    boolean isRoleActivity = false;
+    SharedPreferences prefs;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
         initializeViews();
+        initializeSharedPreference();
+        getFromShared();
         initializeFirebaseInstances();
+        //getCurrentUser();
         facebookRegister();
+        currentUserIdAndEmail=getAllEmailsFromDB();
+
+        Log.e("TAG","ZUZUZ");
     }
 
     private void facebookRegister() {
@@ -64,7 +86,7 @@ public class LoginActivity extends AppCompatActivity {
             public void onSuccess(LoginResult loginResult) {
                 Log.d(TAG,"register SUCCESS");
                 handleFacebookAccessToken(loginResult.getAccessToken());
-
+                Log.d(TAG,"Finish Handle");
             }
 
             @Override
@@ -74,11 +96,31 @@ public class LoginActivity extends AppCompatActivity {
 
             @Override
             public void onError(FacebookException error) {
-                Log.d(TAG,"register ERROR");
+                Log.e(TAG,"register ERROR");
             }
         });
     }
+    private void initializeSharedPreference(){
+        prefs =getSharedPreferences("preference.txt",MODE_PRIVATE);
+    }
+    private void saveToSharedPreference(){
+        SharedPreferences.Editor editor = prefs.edit();
+        editor.putString("UUID",regiserUserUUID);
+        editor.apply();
+    }
+    private void getFromShared(){
+        String data = prefs.getString("UUID","");
 
+        if(data.isEmpty()){
+            Log.d(TAG,"getFromShared is empty");
+        }else{
+            regiserUserUUID =data;
+            Log.d(TAG,"Found UUID :)");
+        }
+    }
+    private String getUserTypeFromShared(){
+        return prefs.getString("userType","");
+    }
     private void handleFacebookAccessToken(AccessToken accessToken) {
         Log.d(TAG,"handleFacebookAccessToken"+accessToken);
         AuthCredential credential = FacebookAuthProvider.getCredential(accessToken.getToken());
@@ -88,12 +130,64 @@ public class LoginActivity extends AppCompatActivity {
                 .addOnCompleteListener(this, task -> {
                     if(task.isSuccessful()) {
                         Log.d(TAG, "signIn with SUCCESS :)");
-                        FirebaseUser user = firebaseAuth.getCurrentUser();
-                        Log.d(TAG,"username "+user.getDisplayName()+" "+user.getEmail());
+                        addUserToDB();
+//                        if(!isRoleActivity)
+//                        {
+//                            roleActivity();
+//                        }
+                        nextAct();
+                        Log.d("ROLE=",isRoleActivity+"");
+                        Log.d(TAG,"username "+loggedUserName);
                     }else{
                         Log.d(TAG, "signIn with FAILED :(");
                     }
+                    Log.d(TAG,"Finish Handle=2");
                 });
+    }
+
+    private void addUserToDB() {
+
+        FirebaseUser user = firebaseAuth.getCurrentUser();
+        populateConstants(user);
+        saveToSharedPreference();
+        Log.d(TAG,"username "+user.getDisplayName()+" "+user.getEmail()+"UUID"+user.getUid());
+        for(Map.Entry<String, Worker> s:currentUserIdAndEmail.entrySet()){
+           if(user.getEmail().equals(s.getValue().getEmail())){
+               Log.d(TAG,"email Already exists");
+               regiserUserUUID = s.getKey();
+                //currentWorker = firebaseAPI.getCurrentUser(regiserUserUUID);
+               return;
+           }
+        }
+
+        User registeredUser = new User(loggedUserEmail,loggedUserName);
+        Log.d(TAG,"loggedUserEmail="+loggedUserEmail+"loggedUserName="+loggedUserName+"regiserUserUUID="+regiserUserUUID);
+        firebaseHelper.userDatabaseReference.child(regiserUserUUID).setValue(registeredUser);
+
+    }
+    private void populateConstants(FirebaseUser user){
+        loggedUserName = user.getDisplayName();
+        loggedUserEmail = user.getEmail();
+        regiserUserUUID = user.getUid();
+    }
+    private Map<String, Worker> getAllEmailsFromDB(){
+        Map<String,Worker> idAndEmails = new HashMap<>();
+        FirebaseHelper.userDatabaseReference.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                 for(DataSnapshot dataSnapshot:snapshot.getChildren()){
+                     Worker user = dataSnapshot.getValue(Worker.class);
+                     idAndEmails.put(dataSnapshot.getKey(),user);
+                     Log.d(TAG,"KEY:"+ idAndEmails.keySet());
+                 }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
+        return idAndEmails;
     }
 
     private void initializeViews(){
@@ -105,15 +199,13 @@ public class LoginActivity extends AppCompatActivity {
         logInButton = findViewById(R.id.logInButton);
         createAccountButton = findViewById(R.id.createAccountButton);
         loginButton = findViewById(R.id.login_button);
-
-
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         callbackManager.onActivityResult(requestCode, resultCode, data);
         super.onActivityResult(requestCode, resultCode, data);
-
+        //roleActivity();
         // for read/write facebook user data
 //        GraphRequest graphRequest = GraphRequest.newMeRequest(AccessToken.getCurrentAccessToken(), (object, response) -> {
 //            Log.d("ZUZU graphRequest",object.toString());
@@ -143,10 +235,10 @@ public class LoginActivity extends AppCompatActivity {
             }
         }
     };
-
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        Log.d(TAG,"onDESTROY");
         accessTokenTracker.stopTracking();
     }
 
@@ -171,24 +263,35 @@ public class LoginActivity extends AppCompatActivity {
                             // Sign in success, update UI with the signed-in user's information
                             //LoggedUserData.loggedUserPassword = password;
                             Toast.makeText(getBaseContext(), "success", Toast.LENGTH_SHORT).show();
-                            nextActivity();
+                            //nextActivity();
                         } else {
                             // If sign in fails, display a message to the user.
                             Toast.makeText(getBaseContext(), "Something went wrong :(", Toast.LENGTH_SHORT).show();
                         }
-
                     }
                 });
 
     }
-    private void nextActivity(){
-        Intent intent = new Intent(this, MainActivity.class);
+    private void nextActivity(Class MyClass){
+        Intent intent = new Intent(this, MyClass);
         startActivity(intent);
-
     }
 
     public void registerActivity(View view) {
         Intent intent = new Intent(this, RegisterActivity.class);
         startActivity(intent);
+    }
+    private void nextAct(){
+        String userType = getUserTypeFromShared();
+        if(userType.isEmpty()){
+            nextActivity(SelectRole.class);
+        }
+        if(Integer.parseInt(userType)== 0){
+            nextActivity(UserProfile.class);
+        }
+        if(Integer.parseInt(userType) == 1){
+            nextActivity(WorkerProfile.class);
+        }
+
     }
 }
