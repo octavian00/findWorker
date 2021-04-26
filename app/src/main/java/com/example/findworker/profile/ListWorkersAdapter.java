@@ -14,14 +14,15 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.findworker.R;
 import com.example.findworker.helpers.LoggedUserData;
 import com.example.findworker.models.Worker;
+import com.example.findworker.models.WorkerOrders;
 
 import java.io.Serializable;
 import java.util.List;
 
 public class ListWorkersAdapter extends RecyclerView.Adapter<ListWorkersViewHolder> implements Serializable {
     private Context context;
-    private List<Worker> workerList;
-    public  ListWorkersAdapter(List<Worker> workers){
+    private List<WorkerOrders> workerList;
+    public  ListWorkersAdapter(List<WorkerOrders> workers){
         this.workerList = workers;
     }
     @NonNull
@@ -35,7 +36,7 @@ public class ListWorkersAdapter extends RecyclerView.Adapter<ListWorkersViewHold
 
     @Override
     public void onBindViewHolder(@NonNull ListWorkersViewHolder holder, int position) {
-        final Worker worker = workerList.get(position);
+        final WorkerOrders worker = workerList.get(position);
         holder.setValues(worker.getUsername(),worker.getJobTitle());
         Log.d("UUID=", LoggedUserData.uuidlist.get(position));
         Log.d("EMAIL=", worker.getEmail());

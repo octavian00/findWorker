@@ -12,13 +12,16 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.example.findworker.FillData;
 import com.example.findworker.FireBaseCallBack;
-import com.example.findworker.MainActivity;
 import com.example.findworker.R;
 import com.example.findworker.SelectRole;
+import com.example.findworker.WorkerProfile;
 import com.example.findworker.helpers.FirebaseHelper;
 import com.example.findworker.models.User;
 import com.example.findworker.models.Worker;
+import com.example.findworker.models.WorkerOrders;
+import com.example.findworker.profile.UserProfile;
 import com.facebook.AccessToken;
 import com.facebook.AccessTokenTracker;
 import com.facebook.CallbackManager;
@@ -38,12 +41,10 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.ValueEventListener;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 
 import static com.example.findworker.helpers.LoggedUserData.loggedUserName;
 import static com.example.findworker.helpers.LoggedUserData.loggedUserEmail;
@@ -70,7 +71,7 @@ public class  LoginActivity extends AppCompatActivity {
         initializeSharedPreference();
         getFromShared();
         initializeFirebaseInstances();
-        getCurrentUser();
+        //getCurrentUser();
         facebookRegister();
         currentUserIdAndEmail=getAllEmailsFromDB();
 
@@ -109,13 +110,16 @@ public class  LoginActivity extends AppCompatActivity {
     }
     private void getFromShared(){
         String data = prefs.getString("UUID","");
+
         if(data.isEmpty()){
             Log.d(TAG,"getFromShared is empty");
         }else{
             regiserUserUUID =data;
             Log.d(TAG,"Found UUID :)");
         }
-
+    }
+    private String getUserTypeFromShared(){
+        return prefs.getString("userType","");
     }
     private void handleFacebookAccessToken(AccessToken accessToken) {
         Log.d(TAG,"handleFacebookAccessToken"+accessToken);
@@ -127,10 +131,11 @@ public class  LoginActivity extends AppCompatActivity {
                     if(task.isSuccessful()) {
                         Log.d(TAG, "signIn with SUCCESS :)");
                         addUserToDB();
-                        if(!isRoleActivity)
-                        {
-                            roleActivity();
-                        }
+//                        if(!isRoleActivity)
+//                        {
+//                            roleActivity();
+//                        }
+                        nextAct();
                         Log.d("ROLE=",isRoleActivity+"");
                         Log.d(TAG,"username "+loggedUserName);
                     }else{
@@ -230,30 +235,6 @@ public class  LoginActivity extends AppCompatActivity {
             }
         }
     };
-    public void  getCurrentUser(final FireBaseCallBack fireBaseCallBack, String UUID){
-        Log.d("TAG","START===="+UUID);
-        FirebaseHelper.userDatabaseReference.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                for(DataSnapshot dataSnapshot:snapshot.getChildren()){
-                    Log.d("TAG","uuidCUrent="+dataSnapshot.getKey());
-                    if(dataSnapshot.getKey().equals(UUID))
-                    {
-                        Log.d("TAG","GASESTE UUID");
-                        w[0] = dataSnapshot.getValue(Worker.class);
-                        fireBaseCallBack.onCallBack(w[0]);
-                        break;
-                        //Log.d("TAG","===="+ worker[0].getEmail());
-                    }
-
-                }
-            }
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-
-            }
-        });
-    }
     @Override
     protected void onDestroy() {
         super.onDestroy();
@@ -282,7 +263,7 @@ public class  LoginActivity extends AppCompatActivity {
                             // Sign in success, update UI with the signed-in user's information
                             //LoggedUserData.loggedUserPassword = password;
                             Toast.makeText(getBaseContext(), "success", Toast.LENGTH_SHORT).show();
-                            nextActivity();
+                            //nextActivity();
                         } else {
                             // If sign in fails, display a message to the user.
                             Toast.makeText(getBaseContext(), "Something went wrong :(", Toast.LENGTH_SHORT).show();
@@ -291,8 +272,8 @@ public class  LoginActivity extends AppCompatActivity {
                 });
 
     }
-    private void nextActivity(){
-        Intent intent = new Intent(this, MainActivity.class);
+    private void nextActivity(Class MyClass){
+        Intent intent = new Intent(this, MyClass);
         startActivity(intent);
     }
 
@@ -300,27 +281,17 @@ public class  LoginActivity extends AppCompatActivity {
         Intent intent = new Intent(this, RegisterActivity.class);
         startActivity(intent);
     }
-    public void roleActivity(){
-        Intent intent = new Intent(this, SelectRole.class);
-        startActivity(intent);
-    }
-    private  void getCurrentUser()
-    {
-        getCurrentUser(new FireBaseCallBack() {
-            @Override
-            public void onCallBack(Worker worker) {
-                if(worker.getJobTitle()!=null)
-                {
-                    Log.d("jobTitle","INTRA AICI");
-                    isRoleActivity = true;
-                }
-            }
-
-            @Override
-            public void onCallBackListOfWorkers(List<Worker> worker) {
-
-            }
-        },regiserUserUUID);
+    private void nextAct(){
+        String userType = getUserTypeFromShared();
+        if(userType.isEmpty()){
+            nextActivity(SelectRole.class);
+        }
+        if(Integer.parseInt(userType)== 0){
+            nextActivity(UserProfile.class);
+        }
+        if(Integer.parseInt(userType) == 1){
+            nextActivity(WorkerProfile.class);
+        }
 
     }
 }

@@ -12,13 +12,16 @@ import com.example.findworker.FireBaseCallBack;
 import com.example.findworker.R;
 import com.example.findworker.helpers.FirebaseHelper;
 import com.example.findworker.helpers.LoggedUserData;
+import com.example.findworker.models.User;
 import com.example.findworker.models.Worker;
+import com.example.findworker.models.WorkerOrders;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 public class UserProfile extends AppCompatActivity {
     RecyclerView rv;
@@ -32,12 +35,12 @@ public class UserProfile extends AppCompatActivity {
         getWorkers();
     }
     public void getAllWorkers(FireBaseCallBack fireBaseCallBack) {
-        ArrayList<Worker> workers = new ArrayList<>();
+        ArrayList<WorkerOrders> workers = new ArrayList<>();
         FirebaseHelper.userDatabaseReference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 for(DataSnapshot dataSnapshot:snapshot.getChildren()){
-                    Worker user = dataSnapshot.getValue(Worker.class);
+                    WorkerOrders user = dataSnapshot.getValue(WorkerOrders.class);
                     Log.d("UserProfile1=",user.showWorkersField());
                     if(user.getJobTitle()!=null && !user.getJobTitle().equals(" default")) {
                         workers.add(user);
@@ -61,8 +64,8 @@ public class UserProfile extends AppCompatActivity {
             }
 
             @Override
-            public void onCallBackListOfWorkers(List<Worker> worker) {
-                for(Worker w:worker){
+            public void onCallBackListOfWorkers(List<WorkerOrders> worker) {
+                for(WorkerOrders w:worker){
                  Log.d("UserProfile=",w.showWorkersField());
                 }
                 if(worker.size() !=0 ) {
@@ -71,9 +74,14 @@ public class UserProfile extends AppCompatActivity {
                     Log.e("USERPROFILE","EMPTY");
                 }
             }
+
+            @Override
+            public void onCallBackListOfClients(Map<String,User> users) {
+
+            }
         });
     }
-    private void setRecyclerView(List<Worker> workerList){
+    private void setRecyclerView(List<WorkerOrders> workerList){
         listWorkersAdapter = new ListWorkersAdapter(workerList);
         rv.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
         rv.setAdapter(listWorkersAdapter);
