@@ -27,11 +27,7 @@ public class SelectRole extends AppCompatActivity {
 
     public void workerUpdate(View view) {
         saveToSharedPreference(1);
-//        Log.d("ROLE=","START");
-//        Log.d("ROLE=","loggedUserEmail="+loggedUserEmail+"loggedUserName="+loggedUserName+"regiserUserUUID="+regiserUserUUID);
-//        Worker worker = new Worker(loggedUserEmail,loggedUserName,"default");
-//        FirebaseHelper.userDatabaseReference.child(regiserUserUUID).setValue(worker);
-//        Log.d("ROLE=",worker.getEmail());
+
         startActivity(new Intent(getApplicationContext(),WorkerProfile.class));
     }
 

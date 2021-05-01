@@ -71,13 +71,34 @@ public class  LoginActivity extends AppCompatActivity {
         initializeSharedPreference();
         getFromShared();
         initializeFirebaseInstances();
-        //getCurrentUser();
         facebookRegister();
-        currentUserIdAndEmail=getAllEmailsFromDB();
+        emailsFromDb();
 
         Log.e("TAG","ZUZUZ");
     }
+    private void emailsFromDb(){
+        getAllEmailsFromDB(new FireBaseCallBack() {
+            @Override
+            public void onCallBack(Worker worker) {
 
+            }
+
+            @Override
+            public void onCallBackListOfWorkers(List<WorkerOrders> worker) {
+
+            }
+
+            @Override
+            public void onCallBackListOfClients(Map<String, User> users) {
+
+            }
+
+            @Override
+            public void onCallBackMapidEmails(Map<String, Worker> idAndEmails) {
+                currentUserIdAndEmail = idAndEmails;
+            }
+        });
+    }
     private void facebookRegister() {
         Log.d(TAG,"facebookRegister");
         loginButton.setPermissions(Arrays.asList("email"));
@@ -155,7 +176,7 @@ public class  LoginActivity extends AppCompatActivity {
            if(user.getEmail().equals(s.getValue().getEmail())){
                Log.d(TAG,"email Already exists");
                regiserUserUUID = s.getKey();
-                //currentWorker = firebaseAPI.getCurrentUser(regiserUserUUID);
+                Log.d(TAG,"regiserUserUUID"+ regiserUserUUID);
                return;
            }
         }
@@ -170,24 +191,22 @@ public class  LoginActivity extends AppCompatActivity {
         loggedUserEmail = user.getEmail();
         regiserUserUUID = user.getUid();
     }
-    private Map<String, Worker> getAllEmailsFromDB(){
-        Map<String,Worker> idAndEmails = new HashMap<>();
+    private void getAllEmailsFromDB(FireBaseCallBack fireBaseCallBack){
+        currentUserIdAndEmail = new HashMap<>();
         FirebaseHelper.userDatabaseReference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                  for(DataSnapshot dataSnapshot:snapshot.getChildren()){
                      Worker user = dataSnapshot.getValue(Worker.class);
-                     idAndEmails.put(dataSnapshot.getKey(),user);
-                     Log.d(TAG,"KEY:"+ idAndEmails.keySet());
+                     currentUserIdAndEmail.put(dataSnapshot.getKey(),user);
+                     fireBaseCallBack.onCallBackMapidEmails(currentUserIdAndEmail);
                  }
             }
-
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
 
             }
         });
-        return idAndEmails;
     }
 
     private void initializeViews(){
