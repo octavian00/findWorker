@@ -40,6 +40,7 @@ public class ListOrdersAdapter extends RecyclerView.Adapter<ListOrdersViewHolder
         final User user = (User) userList.values().toArray()[position];
         holder.setValues(user.getEmail());
         holder.setCurrentUserUUID((String) userList.keySet().toArray()[position]);
+        holder.setPosition(position);
     }
 
     @Override

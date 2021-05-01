@@ -17,6 +17,9 @@ public class WorkerOrders extends Worker {
     public void setPendingOrders(ArrayList<String> pendingOrders) {
         this.pendingOrders = pendingOrders;
     }
+    public void removePendingOrders(int position){
+        this.pendingOrders.remove(position);
+    }
 
     public  void addUserOrder(String currentUUID){
         this.pendingOrders.add(currentUUID);
