@@ -156,18 +156,19 @@ public class  LoginActivity extends AppCompatActivity {
 //                        {
 //                            roleActivity();
 //                        }
-                        nextAct();
+                        //
                         Log.d("ROLE=",isRoleActivity+"");
                         Log.d(TAG,"username "+loggedUserName);
                     }else{
                         Log.d(TAG, "signIn with FAILED :(");
                     }
                     Log.d(TAG,"Finish Handle=2");
+                    nextAct();
                 });
     }
 
     private void addUserToDB() {
-
+        Log.d(TAG,"addUserToDB");
         FirebaseUser user = firebaseAuth.getCurrentUser();
         populateConstants(user);
         saveToSharedPreference();
@@ -184,7 +185,6 @@ public class  LoginActivity extends AppCompatActivity {
         User registeredUser = new User(loggedUserEmail,loggedUserName);
         Log.d(TAG,"loggedUserEmail="+loggedUserEmail+"loggedUserName="+loggedUserName+"regiserUserUUID="+regiserUserUUID);
         firebaseHelper.userDatabaseReference.child(regiserUserUUID).setValue(registeredUser);
-
     }
     private void populateConstants(FirebaseUser user){
         loggedUserName = user.getDisplayName();
@@ -304,13 +304,14 @@ public class  LoginActivity extends AppCompatActivity {
         String userType = getUserTypeFromShared();
         if(userType.isEmpty()){
             nextActivity(SelectRole.class);
+            return;
         }
         if(Integer.parseInt(userType)== 0){
             nextActivity(UserProfile.class);
+            return;
         }
         if(Integer.parseInt(userType) == 1){
             nextActivity(WorkerProfile.class);
         }
-
     }
 }
