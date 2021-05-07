@@ -12,6 +12,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.example.findworker.DeserializeJsonArray;
 import com.example.findworker.FillData;
 import com.example.findworker.FireBaseCallBack;
 import com.example.findworker.R;
@@ -27,6 +28,7 @@ import com.facebook.AccessTokenTracker;
 import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
 import com.facebook.FacebookException;
+import com.facebook.GraphRequest;
 import com.facebook.login.LoginManager;
 import com.facebook.login.LoginResult;
 import com.facebook.login.widget.LoginButton;
@@ -40,6 +42,10 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.ValueEventListener;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -62,6 +68,7 @@ public class  LoginActivity extends AppCompatActivity {
     final Worker[] w = {new Worker()};
     boolean isRoleActivity = false;
     SharedPreferences prefs;
+    JSONArray jsonObject;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -241,10 +248,13 @@ public class  LoginActivity extends AppCompatActivity {
 //        graphRequest.setParameters(bundle);
 //        graphRequest.executeAsync();
         Log.d(TAG,"onResult");
-//        GraphRequest graphRequest = GraphRequest.newMyFriendsRequest(AccessToken.getCurrentAccessToken(),((objects, response) -> {
-//            Log.d("FRIENDS",objects.toString());
-//        }));
-//        graphRequest.executeAsync();
+        GraphRequest graphRequest = GraphRequest.newMyFriendsRequest(AccessToken.getCurrentAccessToken(),((objects, response) -> {
+            Log.d("FRIENDS",objects.toString());
+            jsonObject = objects;
+            saveFacebookFriendsToShared();
+        }));
+        graphRequest.executeAsync();
+
     }
     AccessTokenTracker accessTokenTracker = new AccessTokenTracker() {
         @Override
@@ -254,6 +264,11 @@ public class  LoginActivity extends AppCompatActivity {
             }
         }
     };
+    private void saveFacebookFriendsToShared(){
+        SharedPreferences.Editor editor = prefs.edit();
+        editor.putString("facebookFriends",jsonObject.toString());
+        editor.apply();
+    }
     @Override
     protected void onDestroy() {
         super.onDestroy();

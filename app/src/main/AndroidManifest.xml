@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.example.findworker" >
+    package="com.example.findworker">
 
     <uses-permission android:name="android.permission.INTERNET" />
 
@@ -10,19 +10,17 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/Theme.FindWorker" >
+        android:theme="@style/Theme.FindWorker">
+        <activity android:name=".profile.user.ui.notifications.CreateReview"></activity>
         <activity
             android:name=".profile.user.User"
-            android:label="@string/title_activity_user" >
-        </activity>
+            android:label="@string/title_activity_user"></activity>
         <activity
             android:name=".profile.user.UserView"
-            android:label="@string/title_activity_user_view" >
-        </activity>
+            android:label="@string/title_activity_user_view"></activity>
         <activity
             android:name=".profile.user.UserMenu"
-            android:label="@string/title_activity_user_menu" >
-        </activity>
+            android:label="@string/title_activity_user_menu"></activity>
         <activity
             android:name=".WorkerProfile"
             android:label="@string/title_activity_worker_profile" />
@@ -33,7 +31,7 @@
         <activity android:name=".WorkerUpdateInfo" />
         <activity android:name=".login.RegisterActivity" />
         <activity android:name=".MainActivity" />
-        <activity android:name=".login.LoginActivity" >
+        <activity android:name=".login.LoginActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -51,7 +49,7 @@
             android:label="@string/app_name" />
         <activity
             android:name="com.facebook.CustomTabActivity"
-            android:exported="true" >
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
 

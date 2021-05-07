@@ -1,6 +1,7 @@
 package com.example.findworker.profile.user.ui.notifications;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -10,24 +11,61 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
 import com.example.findworker.R;
+import com.example.findworker.helpers.FirebaseHelper;
+import com.example.findworker.helpers.LoggedUserData;
+import com.example.findworker.models.UserReview;
+import com.example.findworker.models.WorkerOrders;
+import com.example.findworker.profile.ListWorkerForReviewAdapter;
+import com.example.findworker.profile.ListWorkersAdapter;
+import com.example.findworker.ui.dashboard.ListOrdersAdapter;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.ValueEventListener;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class NotificationsFragment extends Fragment {
-
-    private NotificationsViewModel notificationsViewModel;
-
+    RecyclerView rv;
+    List<WorkerOrders> workersForReview;
+    private ListWorkerForReviewAdapter listWorkersAdapter;
     public View onCreateView(@NonNull LayoutInflater inflater,
             ViewGroup container, Bundle savedInstanceState) {
-        notificationsViewModel =
-                new ViewModelProvider(this).get(NotificationsViewModel.class);
         View root = inflater.inflate(R.layout.fragment_user_review, container, false);
-        final TextView textView = root.findViewById(R.id.text_notifications);
-        notificationsViewModel.getText().observe(getViewLifecycleOwner(), new Observer<String>() {
+        rv=root.findViewById(R.id.rv_worker_review);
+        LoggedUserData.uuidlist = new ArrayList<>();
+        getWorkersForReview();
+        return root;
+    }
+    private void getWorkersForReview(){
+        workersForReview = new ArrayList<>();
+        FirebaseHelper.userDatabaseReference.addValueEventListener(new ValueEventListener() {
             @Override
-            public void onChanged(@Nullable String s) {
-                textView.setText(s);
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                UserReview userReview = snapshot.child(LoggedUserData.regiserUserUUID).getValue(UserReview.class);
+                for(String s:userReview.getWorkersForReview()){
+                    workersForReview.add(snapshot.child(s).getValue(WorkerOrders.class));
+                    LoggedUserData.uuidlist.add(snapshot.child(s).getKey());
+                }
+                for(WorkerOrders w:workersForReview){
+                    Log.d("WORKERS",w.getEmail());
+                }
+                setRecyclerView(workersForReview);
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
             }
         });
-        return root;
+    }
+    private void setRecyclerView(List<WorkerOrders> workersForReview){
+        listWorkersAdapter = new ListWorkerForReviewAdapter(workersForReview);
+        rv.setLayoutManager(new LinearLayoutManager(getContext()));
+        rv.setAdapter(listWorkersAdapter);
     }
 }
