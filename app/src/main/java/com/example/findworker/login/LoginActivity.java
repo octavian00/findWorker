@@ -20,6 +20,7 @@ import com.example.findworker.SelectRole;
 import com.example.findworker.WorkerProfile;
 import com.example.findworker.helpers.FirebaseHelper;
 import com.example.findworker.models.User;
+import com.example.findworker.models.UserReview;
 import com.example.findworker.models.Worker;
 import com.example.findworker.models.WorkerOrders;
 import com.example.findworker.profile.UserProfile;
@@ -103,6 +104,11 @@ public class  LoginActivity extends AppCompatActivity {
             @Override
             public void onCallBackMapidEmails(Map<String, Worker> idAndEmails) {
                 currentUserIdAndEmail = idAndEmails;
+            }
+
+            @Override
+            public void onCallBackUserReview(UserReview userReview) {
+
             }
         });
     }

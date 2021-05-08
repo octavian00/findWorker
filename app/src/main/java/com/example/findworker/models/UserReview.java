@@ -26,7 +26,7 @@ public class UserReview extends User{
         initilizeWorkerList();
         workersForReview.add(workerUUID);
     }
-    public   boolean isAlreadyAdded(String workerUUID){
+    public boolean isAlreadyAdded(String workerUUID){
         if(workersForReview == null)
             return  false;
         for(String s:workersForReview) {

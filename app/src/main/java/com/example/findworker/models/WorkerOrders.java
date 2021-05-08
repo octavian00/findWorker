@@ -5,6 +5,8 @@ import java.util.ArrayList;
 public class WorkerOrders extends Worker {
     private ArrayList<String> pendingOrders;
     private ArrayList<Review> reviews;
+    private Double average;
+    private Integer numberOfReviews;
     public WorkerOrders(){}
     public WorkerOrders(String email, String username, String jobTitle,Integer experience,String location,ArrayList<String> pendingOrders){
         super(email,username,jobTitle,experience,location);
@@ -39,5 +41,21 @@ public class WorkerOrders extends Worker {
 
     public  void addUserOrder(String currentUUID){
         this.pendingOrders.add(currentUUID);
+    }
+
+    public Double getAverage() {
+        return average;
+    }
+
+    public void setAverage(Double average) {
+        this.average = average;
+    }
+
+    public Integer getNumberOfReviews() {
+        return numberOfReviews;
+    }
+
+    public void setNumberOfReviews(Integer numberOfReviews) {
+        this.numberOfReviews = numberOfReviews;
     }
 }

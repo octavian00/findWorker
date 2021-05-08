@@ -15,6 +15,7 @@ import com.example.findworker.R;
 import com.example.findworker.helpers.FirebaseHelper;
 import com.example.findworker.helpers.LoggedUserData;
 import com.example.findworker.models.User;
+import com.example.findworker.models.UserReview;
 import com.example.findworker.models.Worker;
 import com.example.findworker.models.WorkerOrders;
 import com.example.findworker.profile.ListWorkersAdapter;
@@ -79,6 +80,11 @@ public class DashboardFragment extends Fragment {
 
             @Override
             public void onCallBackMapidEmails(Map<String, Worker> idAndEmails) {
+
+            }
+
+            @Override
+            public void onCallBackUserReview(UserReview userReview) {
 
             }
         });

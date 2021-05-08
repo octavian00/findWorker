@@ -32,11 +32,13 @@ import java.util.List;
 public class NotificationsFragment extends Fragment {
     RecyclerView rv;
     List<WorkerOrders> workersForReview;
+    TextView tv_leaveReview;
     private ListWorkerForReviewAdapter listWorkersAdapter;
     public View onCreateView(@NonNull LayoutInflater inflater,
             ViewGroup container, Bundle savedInstanceState) {
         View root = inflater.inflate(R.layout.fragment_user_review, container, false);
         rv=root.findViewById(R.id.rv_worker_review);
+        tv_leaveReview = root.findViewById(R.id.tv_leaveReview);
         LoggedUserData.uuidlist = new ArrayList<>();
         getWorkersForReview();
         return root;
@@ -47,14 +49,18 @@ public class NotificationsFragment extends Fragment {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 UserReview userReview = snapshot.child(LoggedUserData.regiserUserUUID).getValue(UserReview.class);
-                for(String s:userReview.getWorkersForReview()){
-                    workersForReview.add(snapshot.child(s).getValue(WorkerOrders.class));
-                    LoggedUserData.uuidlist.add(snapshot.child(s).getKey());
+                if(userReview.getWorkersForReview()!=null) {
+                    for (String s : userReview.getWorkersForReview()) {
+                        workersForReview.add(snapshot.child(s).getValue(WorkerOrders.class));
+                        LoggedUserData.uuidlist.add(snapshot.child(s).getKey());
+                    }
+                    for (WorkerOrders w : workersForReview) {
+                        Log.d("WORKERS", w.getEmail());
+                    }
+                    tv_leaveReview.setText("Nothing for review");
+                    setRecyclerView(workersForReview);
                 }
-                for(WorkerOrders w:workersForReview){
-                    Log.d("WORKERS",w.getEmail());
-                }
-                setRecyclerView(workersForReview);
+
             }
 
             @Override
@@ -64,8 +70,10 @@ public class NotificationsFragment extends Fragment {
         });
     }
     private void setRecyclerView(List<WorkerOrders> workersForReview){
-        listWorkersAdapter = new ListWorkerForReviewAdapter(workersForReview);
-        rv.setLayoutManager(new LinearLayoutManager(getContext()));
-        rv.setAdapter(listWorkersAdapter);
+        if(workersForReview !=null) {
+            listWorkersAdapter = new ListWorkerForReviewAdapter(workersForReview);
+            rv.setLayoutManager(new LinearLayoutManager(getContext()));
+            rv.setAdapter(listWorkersAdapter);
+        }
     }
 }
