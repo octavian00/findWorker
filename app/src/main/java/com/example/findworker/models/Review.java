@@ -4,17 +4,18 @@ public class Review {
     private String shortProblemDescription;
     private String userFeedback;
     private Double userRating;
-    private String userEmail;
+    private String username;
     public Review(){}
-    public Review(String shortProblemDescription, String userFeedback, Double userRating, String userEmail) {
+    public Review(String shortProblemDescription, String userFeedback,
+                  Double userRating, String userEmail) {
         this.shortProblemDescription = shortProblemDescription;
         this.userFeedback = userFeedback;
         this.userRating = userRating;
-        this.userEmail = userEmail;
+        this.username = userEmail;
     }
 
-    public String getUserEmail() {
-        return userEmail;
+    public String getUsername() {
+        return username;
     }
 
     public String getShortProblemDescription() {

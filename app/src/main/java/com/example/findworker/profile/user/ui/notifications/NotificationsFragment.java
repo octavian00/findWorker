@@ -40,25 +40,28 @@ public class NotificationsFragment extends Fragment {
         rv=root.findViewById(R.id.rv_worker_review);
         tv_leaveReview = root.findViewById(R.id.tv_leaveReview);
         LoggedUserData.uuidlist = new ArrayList<>();
-        getWorkersForReview();
         return root;
     }
     private void getWorkersForReview(){
         workersForReview = new ArrayList<>();
+        FirebaseHelper.getInstance();
         FirebaseHelper.userDatabaseReference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
-                UserReview userReview = snapshot.child(LoggedUserData.regiserUserUUID).getValue(UserReview.class);
-                if(userReview.getWorkersForReview()!=null) {
-                    for (String s : userReview.getWorkersForReview()) {
-                        workersForReview.add(snapshot.child(s).getValue(WorkerOrders.class));
-                        LoggedUserData.uuidlist.add(snapshot.child(s).getKey());
+                workersForReview = new ArrayList<>();
+                if(LoggedUserData.regiserUserUUID !=null) {
+                    UserReview userReview = snapshot.child(LoggedUserData.regiserUserUUID).getValue(UserReview.class);
+                    if (userReview.getWorkersForReview() != null) {
+                        for (String s : userReview.getWorkersForReview()) {
+                            workersForReview.add(snapshot.child(s).getValue(WorkerOrders.class));
+                            LoggedUserData.uuidlist.add(snapshot.child(s).getKey());
+                        }
+                        for (WorkerOrders w : workersForReview) {
+                            Log.d("WORKERS", w.getEmail());
+                        }
+                        tv_leaveReview.setText("Nothing for review");
+                        setRecyclerView(workersForReview);
                     }
-                    for (WorkerOrders w : workersForReview) {
-                        Log.d("WORKERS", w.getEmail());
-                    }
-                    tv_leaveReview.setText("Nothing for review");
-                    setRecyclerView(workersForReview);
                 }
 
             }
@@ -75,5 +78,11 @@ public class NotificationsFragment extends Fragment {
             rv.setLayoutManager(new LinearLayoutManager(getContext()));
             rv.setAdapter(listWorkersAdapter);
         }
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        getWorkersForReview();
     }
 }

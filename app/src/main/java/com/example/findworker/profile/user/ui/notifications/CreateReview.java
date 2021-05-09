@@ -4,8 +4,8 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
+import android.os.CountDownTimer;
 import android.util.Log;
-import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.RatingBar;
@@ -33,6 +33,7 @@ public class CreateReview extends AppCompatActivity {
     Button submit_btn;
     String userUUID;
     final String TAG="CREATEREVIEW";
+    UserReview userRev;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -53,7 +54,7 @@ public class CreateReview extends AppCompatActivity {
     }
     private Review createReview(){
         return  new Review(shortDescription_edt.getText().toString(),review_edt.getText().toString(),
-                (double) r.getRating(), LoggedUserData.loggedUserEmail);
+                (double) r.getRating(), LoggedUserData.loggedUserName);
     }
     private void updateWorker(){
         if(LoggedUserData.currentWorker ==null){
@@ -62,9 +63,10 @@ public class CreateReview extends AppCompatActivity {
         WorkerOrders worker = LoggedUserData.currentWorker;
         worker.addReview(createReview());
         populateWorkeReviewAverage(worker);
-        Log.d("CREATEREVIEW email=",worker.getReviews().get(0).getUserEmail());
+        Log.d("CREATEREVIEW email=",worker.getReviews().get(0).getUsername());
         FirebaseHelper.userDatabaseReference.child(userUUID).setValue(worker);
         updateUserListReviews();
+        Log.d(TAG,"LoggedUserData.regiserUserUUID="+LoggedUserData.regiserUserUUID);
     }
     private void populateWorkeReviewAverage(WorkerOrders workerOrders){
         if(workerOrders.getAverage() == null){
@@ -84,7 +86,11 @@ public class CreateReview extends AppCompatActivity {
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 UserReview userReview =
                         snapshot.child(LoggedUserData.regiserUserUUID).getValue(UserReview.class);
-                fireBaseCallBack.onCallBackUserReview(userReview);
+                if(userReview!=null) {
+                    fireBaseCallBack.onCallBackUserReview(userReview);
+                }else{
+                    Log.d(TAG,"USER REVIEW NULOL");
+                }
             }
 
             @Override
@@ -96,7 +102,7 @@ public class CreateReview extends AppCompatActivity {
     private void updateUserListReviews(){
         getCurrenUser(new FireBaseCallBack() {
             @Override
-            public void onCallBack(Worker worker) {
+            public void onCallBack(WorkerOrders worker) {
 
             }
 
@@ -114,20 +120,45 @@ public class CreateReview extends AppCompatActivity {
             public void onCallBackMapidEmails(Map<String, Worker> idAndEmails) {
 
             }
-
             @Override
             public void onCallBackUserReview(UserReview userReview) {
-                ArrayList<String> usersReviews = (ArrayList<String>) userReview.getWorkersForReview();
-                for(String s: usersReviews){
-                    if(s.equals(userUUID)){
-                        usersReviews.remove(s);
-                        break;
-                    }
-                }
-                userReview.setWorkersForReview(usersReviews);
-                Log.d(TAG, String.valueOf(userReview.getWorkersForReview().size()));
-                FirebaseHelper.userDatabaseReference.child(LoggedUserData.regiserUserUUID).setValue(userReview);
+                userRev = userReview;
             }
         });
+         new CountDownTimer(1000,1){
+             @Override
+             public void onTick(long millisUntilFinished) {
+
+             }
+
+             @Override
+             public void onFinish() {
+                 updateDatabase();
+             }
+         }.start();
+
+    }
+    private void updateDatabase(){
+        if(userRev==null){
+            Log.e(TAG,"userRev null");
+            return;
+        }
+        if(userRev.getWorkersForReview()==null){
+            return;
+        }
+        Log.d(TAG,"getWorkers size="+userRev.getWorkersForReview().size());
+        ArrayList<String> usersReviews= userRev.getWorkersForReview();
+        for(String s: usersReviews){
+            if(s.equals(userUUID)){
+                usersReviews.remove(s);
+                break;
+            }
+        }
+        userRev.setWorkersForReview(usersReviews);
+        Log.d(TAG, String.valueOf(userRev.getWorkersForReview().size()));
+        Log.d(TAG,"LoggedUserData.regiserUserUUID before="+LoggedUserData.regiserUserUUID);
+        FirebaseHelper.userDatabaseReference.child(LoggedUserData.regiserUserUUID).setValue(userRev);
+        Log.d(TAG,"LoggedUserData.regiserUserUUID="+LoggedUserData.regiserUserUUID);
+        finishAndRemoveTask();
     }
 }

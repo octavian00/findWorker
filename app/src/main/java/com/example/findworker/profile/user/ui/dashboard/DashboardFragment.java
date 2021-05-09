@@ -62,7 +62,7 @@ public class DashboardFragment extends Fragment {
     private void getWorkers(){
         getAllWorkers(new FireBaseCallBack() {
             @Override
-            public void onCallBack(Worker worker) {}
+            public void onCallBack(WorkerOrders worker) {}
             @Override
             public void onCallBackListOfWorkers(List<WorkerOrders> worker) {
                 for(WorkerOrders w:worker){

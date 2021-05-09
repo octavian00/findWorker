@@ -56,7 +56,7 @@ public class DashboardFragment extends Fragment {
                 users.clear();
                 Log.d(TAG,LoggedUserData.regiserUserUUID);
                 currentWorker = snapshot.child(LoggedUserData.regiserUserUUID).getValue(WorkerOrders.class);
-                if(currentWorker != null) {
+                if(currentWorker != null && currentWorker.getPendingOrders()!=null) {
                     for(String currentUserUUID:currentWorker.getPendingOrders()) {
                         Log.d(TAG, "currentUUID" + currentUserUUID);
                         User currentUser = snapshot.child(currentUserUUID).getValue(User.class);
@@ -88,7 +88,7 @@ public class DashboardFragment extends Fragment {
     private void pendingOrdersCallback(){
         getPendinOrders(new FireBaseCallBack() {
             @Override
-            public void onCallBack(Worker worker) {
+            public void onCallBack(WorkerOrders worker) {
 
             }
 

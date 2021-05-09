@@ -2,18 +2,18 @@ package com.example.findworker.models;
 
 public class User {
     protected String email;
-    private String password;
+    private String username;
 
     public User() {
     }
 
-    public User(String username) {
-        this.email = username;
+    public User(String email) {
+        this.email = email;
     }
 
-    public User(String username, String password) {
-        this.email = username;
-        this.password = password;
+    public User(String email, String password) {
+        this.email = email;
+        this.username = password;
     }
 
     public String getEmail() {
@@ -24,11 +24,11 @@ public class User {
         this.email = email;
     }
 
-    public String getPassword() {
-        return password;
+    public String getUsername() {
+        return username;
     }
 
-    public void setPassword(String password) {
-        this.password = password;
+    public void setUsername(String username) {
+        this.username = username;
     }
 }

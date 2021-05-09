@@ -87,7 +87,7 @@ public class  LoginActivity extends AppCompatActivity {
     private void emailsFromDb(){
         getAllEmailsFromDB(new FireBaseCallBack() {
             @Override
-            public void onCallBack(Worker worker) {
+            public void onCallBack(WorkerOrders worker) {
 
             }
 

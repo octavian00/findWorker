@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.Map;
 
 public interface FireBaseCallBack {
-    void onCallBack(Worker worker);
+    void onCallBack(WorkerOrders worker);
     void onCallBackListOfWorkers(List<WorkerOrders> worker);
     void onCallBackListOfClients(Map<String,User> users);
     void onCallBackMapidEmails(Map<String,Worker> idAndEmails);

@@ -12,7 +12,7 @@ public class UserReview extends User{
         this.workersForReview = workersForReview;
     }
 
-    public List<String> getWorkersForReview() {
+    public ArrayList<String> getWorkersForReview() {
         return workersForReview;
     }
 
