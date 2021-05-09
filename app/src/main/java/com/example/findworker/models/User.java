@@ -11,9 +11,9 @@ public class User {
         this.email = email;
     }
 
-    public User(String email, String password) {
+    public User(String email, String username) {
         this.email = email;
-        this.username = password;
+        this.username = username;
     }
 
     public String getEmail() {
