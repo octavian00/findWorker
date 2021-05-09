@@ -13,18 +13,10 @@
         android:theme="@style/Theme.FindWorker">
         <activity android:name=".profile.user.ui.notifications.CreateReview"></activity>
         <activity
-            android:name=".profile.user.User"
-            android:label="@string/title_activity_user"></activity>
-        <activity
-            android:name=".profile.user.UserView"
-            android:label="@string/title_activity_user_view"></activity>
-        <activity
-            android:name=".profile.user.UserMenu"
-            android:label="@string/title_activity_user_menu"></activity>
-        <activity
             android:name=".WorkerProfile"
             android:label="@string/title_activity_worker_profile" />
-        <activity android:name=".profile.DetaliedWorkerFromUser" />
+        <activity android:name=".profile.DetaliedWorkerFromUser"
+            android:parentActivityName=".profile.UserProfile"/>
         <activity android:name=".profile.UserProfile" />
         <activity android:name=".SelectRole" />
         <activity android:name=".FillData" />
