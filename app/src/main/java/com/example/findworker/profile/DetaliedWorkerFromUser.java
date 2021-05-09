@@ -2,6 +2,8 @@ package com.example.findworker.profile;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.SharedPreferences;
 import android.icu.number.Precision;
@@ -40,6 +42,7 @@ public class DetaliedWorkerFromUser extends AppCompatActivity implements Seriali
     private final static String TAG="DetaliedWorkerFromUser";
     private TextView tv_experience,tv_det_username,tv_det_location,tv_det_commomFriends,tv_det_average, tv_det_email;
     private Button btn_order;
+    private RecyclerView rv;
     String userUUID;
     SharedPreferences sharedPreferences;
     private static DecimalFormat df2 = new DecimalFormat("#.##");
@@ -89,6 +92,7 @@ public class DetaliedWorkerFromUser extends AppCompatActivity implements Seriali
         tv_det_username = findViewById(R.id.tv_det_username);
         tv_det_email = findViewById(R.id.tv_det_email);
         btn_order = findViewById(R.id.btn_order);
+        rv=findViewById(R.id.rv_det_reviews);
     }
     private void populateViews(WorkerOrders workerOrders, List<String> result){
         tv_experience.setText("Experience: "+workerOrders.getExperience());
@@ -99,6 +103,13 @@ public class DetaliedWorkerFromUser extends AppCompatActivity implements Seriali
         result = result.stream().distinct().collect(Collectors.toList());
         String json = new Gson().toJson(result);
         tv_det_commomFriends.setText("Friends who already collaborate: "+json);
+    }
+    private void setRecyclerView(List<Review> reviewList){
+        if(reviewList !=null) {
+            ListReviewAdapter listReviewAdapter = new ListReviewAdapter(reviewList);
+            rv.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
+            rv.setAdapter(listReviewAdapter);
+        }
     }
     private void listener(){
         btn_order.setOnClickListener(v -> {
@@ -148,10 +159,8 @@ public class DetaliedWorkerFromUser extends AppCompatActivity implements Seriali
                 List<String> result = usernamesFB
                         .stream().filter(facebookFriends::contains)
                         .collect(Collectors.toList());
-                for(String r:result){
-                    Log.d(TAG,"facebookResult="+r);
-                }
                 populateViews(worker,result);
+                setRecyclerView(worker.getReviews());
             }
 
             @Override

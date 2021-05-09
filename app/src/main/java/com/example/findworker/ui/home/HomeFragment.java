@@ -21,7 +21,6 @@ import static com.example.findworker.helpers.LoggedUserData.regiserUserUUID;
 
 public class HomeFragment extends Fragment {
 
-    private HomeViewModel homeViewModel;
     Button btn_submit;
     EditText edt_jobtTitle,edt_experience,edt_location;
 

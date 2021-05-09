@@ -37,14 +37,20 @@
         android:id="@+id/tv_det_average"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"/>
-
-
     <Button
+        android:layout_gravity="bottom"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Order"
         android:layout_margin="10dp"
         android:id="@+id/btn_order"
         />
+    <androidx.recyclerview.widget.RecyclerView
+        android:layout_margin="10dp"
+        android:id="@+id/rv_det_reviews"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
+
+
 
 </LinearLayout>
