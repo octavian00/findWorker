@@ -2,15 +2,21 @@ package com.example.findworker.profile;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.Manifest;
+import android.content.Intent;
 import android.content.SharedPreferences;
-import android.icu.number.Precision;
+import android.content.pm.PackageManager;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.findworker.DeserializeJsonArray;
 import com.example.findworker.FireBaseCallBack;
@@ -29,7 +35,6 @@ import com.google.gson.Gson;
 
 import org.json.JSONArray;
 import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.io.Serializable;
 import java.text.DecimalFormat;
@@ -41,8 +46,9 @@ import java.util.stream.Collectors;
 public class DetaliedWorkerFromUser extends AppCompatActivity implements Serializable {
     private final static String TAG="DetaliedWorkerFromUser";
     private TextView tv_experience,tv_det_username,tv_det_location,tv_det_commomFriends,tv_det_average, tv_det_email;
-    private Button btn_order;
+    private Button btn_order,btn_call;
     private RecyclerView rv;
+    private static final int REQUEST_CALL = 1;
     String userUUID;
     SharedPreferences sharedPreferences;
     private static DecimalFormat df2 = new DecimalFormat("#.##");
@@ -92,6 +98,7 @@ public class DetaliedWorkerFromUser extends AppCompatActivity implements Seriali
         tv_det_username = findViewById(R.id.tv_det_username);
         tv_det_email = findViewById(R.id.tv_det_email);
         btn_order = findViewById(R.id.btn_order);
+        btn_call = findViewById(R.id.btn_call);
         rv=findViewById(R.id.rv_det_reviews);
     }
     private void populateViews(WorkerOrders workerOrders, List<String> result){
@@ -127,6 +134,8 @@ public class DetaliedWorkerFromUser extends AppCompatActivity implements Seriali
             FirebaseHelper.userDatabaseReference.child(userUUID).setValue(worker);
             finishAndRemoveTask();
         });
+        btn_call.setOnClickListener(v ->
+            {makePhoneCall(LoggedUserData.currentWorker.getPhoneNumber());});
 
     }
     private void getListOfReviews(FireBaseCallBack fireBaseCallBack){
@@ -161,6 +170,7 @@ public class DetaliedWorkerFromUser extends AppCompatActivity implements Seriali
                         .collect(Collectors.toList());
                 populateViews(worker,result);
                 setRecyclerView(worker.getReviews());
+
             }
 
             @Override
@@ -183,5 +193,31 @@ public class DetaliedWorkerFromUser extends AppCompatActivity implements Seriali
 
             }
         });
+    }
+
+    private void makePhoneCall(String number){
+        if(number.trim().length() > 0){
+            if(ContextCompat.checkSelfPermission(this, Manifest.permission.CALL_PHONE) != PackageManager.PERMISSION_GRANTED){
+                ActivityCompat.requestPermissions(DetaliedWorkerFromUser.this,
+                        new String[]{Manifest.permission.CALL_PHONE},REQUEST_CALL);
+            }else{
+                String dial = "tel:" + number;
+                startActivity(new Intent(Intent.ACTION_CALL, Uri.parse(dial)));
+            }
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode,
+                                           @NonNull String[] permissions,
+                                           @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == REQUEST_CALL) {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                makePhoneCall(LoggedUserData.currentWorker.getPhoneNumber());
+            } else {
+                Toast.makeText(this, "Permission DENIED", Toast.LENGTH_SHORT).show();
+            }
+        }
     }
 }

@@ -7,6 +7,16 @@ public class WorkerOrders extends Worker {
     private ArrayList<Review> reviews;
     private Double average;
     private Integer numberOfReviews;
+    private String phoneNumber;
+
+    public String getPhoneNumber() {
+        return phoneNumber;
+    }
+
+    public void setPhoneNumber(String phoneNumber) {
+        this.phoneNumber = phoneNumber;
+    }
+
     public WorkerOrders(){}
     public WorkerOrders(String email, String username, String jobTitle,Integer experience,String location,ArrayList<String> pendingOrders){
         super(email,username,jobTitle,experience,location);

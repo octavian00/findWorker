@@ -37,14 +37,31 @@
         android:id="@+id/tv_det_average"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"/>
-    <Button
-        android:layout_gravity="bottom"
+    <LinearLayout
+        android:layout_margin="10dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Order"
-        android:layout_margin="10dp"
-        android:id="@+id/btn_order"
-        />
+        android:orientation="horizontal">
+        <Button
+            android:layout_gravity="bottom"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Call"
+            android:layout_margin="10dp"
+            android:id="@+id/btn_call"
+            />
+        <Button
+            android:layout_gravity="bottom"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Order"
+            android:layout_margin="10dp"
+            android:id="@+id/btn_order"
+            />
+    </LinearLayout>
+
     <androidx.recyclerview.widget.RecyclerView
         android:layout_margin="10dp"
         android:id="@+id/rv_det_reviews"
