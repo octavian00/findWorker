@@ -7,20 +7,21 @@ public class WorkerOrders extends Worker {
     private ArrayList<Review> reviews;
     private Double average;
     private Integer numberOfReviews;
-    private String phoneNumber;
-
-    public String getPhoneNumber() {
-        return phoneNumber;
-    }
-
-    public void setPhoneNumber(String phoneNumber) {
-        this.phoneNumber = phoneNumber;
-    }
 
     public WorkerOrders(){}
     public WorkerOrders(String email, String username, String jobTitle,Integer experience,String location,ArrayList<String> pendingOrders){
         super(email,username,jobTitle,experience,location);
         this.pendingOrders = pendingOrders;
+    }
+
+    public WorkerOrders(String email, String username, String jobTitle, Integer experience,
+                        String location, String phoneNumber, ArrayList<String> pendingOrders,
+                        ArrayList<Review> reviews, Double average, Integer numberOfReviews) {
+        super(email, username, jobTitle, experience, location, phoneNumber);
+        this.pendingOrders = pendingOrders;
+        this.reviews = reviews;
+        this.average = average;
+        this.numberOfReviews = numberOfReviews;
     }
 
     public void setReviews(ArrayList<Review> reviews) {

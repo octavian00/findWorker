@@ -23,6 +23,12 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:hint="Location"/>
+    <EditText
+        android:id="@+id/edt_phoneNumber"
+        android:layout_margin="10dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Phone Number"/>
     <Button
         android:id="@+id/btn_submit_data"
         android:layout_width="match_parent"

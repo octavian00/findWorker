@@ -20,6 +20,6 @@
     <fragment
         android:id="@+id/user_notifications"
         android:name="com.example.findworker.profile.user.ui.notifications.NotificationsFragment"
-        android:label="@string/title_notifications"
+        android:label="@string/title_user_review"
         tools:layout="@layout/fragment_user_review" />
 </navigation>
