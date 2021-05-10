@@ -101,16 +101,30 @@ public class DetaliedWorkerFromUser extends AppCompatActivity implements Seriali
         btn_call = findViewById(R.id.btn_call);
         rv=findViewById(R.id.rv_det_reviews);
     }
-    private void populateViews(WorkerOrders workerOrders, List<String> result){
-        tv_experience.setText("Experience: "+workerOrders.getExperience());
-        tv_det_email.setText("Email: "+workerOrders.getEmail());
-        tv_det_username.setText("Username: "+workerOrders.getUsername());
-        tv_det_location.setText("Location: "+workerOrders.getLocation());
-        tv_det_average.setText("Rating: "+ df2.format(workerOrders.getAverage()));
+    private void populateCommonFrieds(List<String> result){
         result = result.stream().distinct().collect(Collectors.toList());
         String json = new Gson().toJson(result);
         tv_det_commomFriends.setText("Friends who already collaborate: "+json);
     }
+
+    private void populateBasicViews(WorkerOrders workerOrders) {
+        if(workerOrders.getExperience() !=null){
+            tv_experience.setText("Experience: "+workerOrders.getExperience());
+        }
+        if(workerOrders.getEmail() !=null){
+            tv_det_email.setText("Email: "+workerOrders.getEmail());
+        }
+        if(workerOrders.getUsername() !=null){
+            tv_det_username.setText("Username: "+workerOrders.getUsername());
+        }
+        if(workerOrders.getLocation() !=null){
+            tv_det_location.setText("Location: "+workerOrders.getLocation());
+        }
+        if(workerOrders.getAverage() !=null) {
+            tv_det_average.setText("Rating: " + df2.format(workerOrders.getAverage()));
+        }
+    }
+
     private void setRecyclerView(List<Review> reviewList){
         if(reviewList !=null) {
             ListReviewAdapter listReviewAdapter = new ListReviewAdapter(reviewList);
@@ -156,21 +170,23 @@ public class DetaliedWorkerFromUser extends AppCompatActivity implements Seriali
         getListOfReviews(new FireBaseCallBack() {
             @Override
             public void onCallBack(WorkerOrders worker) {
-                Log.d(TAG,"reviews size="+worker.getReviews().size());
-                List<String> usernamesFB = worker.getReviews()
-                                                 .stream().map(Review::getUsername)
-                                                 .collect(Collectors.toList());
-                List<String> facebookFriends=listFacebookFriends();
-                if(facebookFriends ==null){
-                    Log.e(TAG,"facebookFriends NULL");
-                    return;
+                populateBasicViews(worker);
+                if(worker.getReviews() != null) {
+                    Log.d(TAG, "reviews size=" + worker.getReviews().size());
+                    List<String> usernamesFB = worker.getReviews()
+                            .stream().map(Review::getUsername)
+                            .collect(Collectors.toList());
+                    List<String> facebookFriends = listFacebookFriends();
+                    if (facebookFriends == null) {
+                        Log.e(TAG, "facebookFriends NULL");
+                        return;
+                    }
+                    List<String> result = usernamesFB
+                            .stream().filter(facebookFriends::contains)
+                            .collect(Collectors.toList());
+                    populateCommonFrieds(result);
+                    setRecyclerView(worker.getReviews());
                 }
-                List<String> result = usernamesFB
-                        .stream().filter(facebookFriends::contains)
-                        .collect(Collectors.toList());
-                populateViews(worker,result);
-                setRecyclerView(worker.getReviews());
-
             }
 
             @Override
