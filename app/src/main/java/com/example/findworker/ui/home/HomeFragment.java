@@ -50,7 +50,6 @@ public class HomeFragment extends Fragment {
                     edt_jobtTitle.getText().toString(),Integer.valueOf(edt_experience.getText().toString()),
                     edt_location.getText().toString(),edt_phoneNumber.getText().toString(),workerOrders.getPendingOrders(),
                     workerOrders.getReviews(),workerOrders.getAverage(),workerOrders.getNumberOfReviews());
-            //Worker worker =new Worker(loggedUserEmail,loggedUserName,edt_jobtTitle.getText().toString(),Integer.valueOf(edt_experience.getText().toString()),edt_location.getText().toString());
             FirebaseHelper.userDatabaseReference.child(regiserUserUUID).setValue(worker);
         });
     }
