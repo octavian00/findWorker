@@ -1,46 +1,77 @@
 package com.example.findworker.profile;
 
 import androidx.annotation.NonNull;
+
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.navigation.NavController;
-import androidx.navigation.Navigation;
-import androidx.navigation.ui.AppBarConfiguration;
-import androidx.navigation.ui.NavigationUI;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 
 import android.os.Bundle;
-import android.util.Log;
+import android.view.MenuItem;
 
-import com.example.findworker.FireBaseCallBack;
 import com.example.findworker.R;
-import com.example.findworker.helpers.FirebaseHelper;
-import com.example.findworker.helpers.LoggedUserData;
-import com.example.findworker.models.User;
-import com.example.findworker.models.Worker;
-import com.example.findworker.models.WorkerOrders;
+import com.example.findworker.profile.user.ui.dashboard.DashboardFragment;
+import com.example.findworker.profile.user.ui.home.HomeFragment;
+import com.example.findworker.profile.user.ui.notifications.NotificationsFragment;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.ValueEventListener;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+public class UserProfile extends AppCompatActivity implements BottomNavigationView.OnNavigationItemSelectedListener{
+    private HomeFragment homeFragment;
+    private DashboardFragment dashboardFragment;
+    private NotificationsFragment notificationsFragment;
+    private Fragment activeFragment;
+    private BottomNavigationView bottomNavigationView;
+    private FragmentManager fragmentManager = getSupportFragmentManager();
+    @Override
+    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+        switch (item.getItemId()){
+            case R.id.user_home:
+                removeFragments();
+                fragmentManager.beginTransaction().add(R.id.nav_host_fragment_user,homeFragment,"1").hide(activeFragment).show(homeFragment).commit();
+                activeFragment = homeFragment;
+                return true;
+            case R.id.user_dashboard:
+                removeFragments();
+                fragmentManager.beginTransaction().add(R.id.nav_host_fragment_user,dashboardFragment,"2").hide(activeFragment).show(dashboardFragment).commit();
+                activeFragment = dashboardFragment;
+                return true;
+            case R.id.user_notifications:
+                removeFragments();
+                fragmentManager.beginTransaction().add(R.id.nav_host_fragment_user,notificationsFragment,"3").hide(activeFragment).show(notificationsFragment).commit();
+                activeFragment = notificationsFragment;
+                return true;
+            default:return false;
+        }
+    }
 
-public class UserProfile extends AppCompatActivity {
-@Override
-protected void onCreate(Bundle savedInstanceState) {
-    super.onCreate(savedInstanceState);
-    setContentView(R.layout.activity_user_profile);
-    BottomNavigationView navView = findViewById(R.id.nav_view_user);
-//    // Passing each menu ID as a set of Ids because each
-//    // menu should be considered as top level destinations.
-    AppBarConfiguration appBarConfiguration = new AppBarConfiguration.Builder(
-            R.id.user_home, R.id.user_dashboard, R.id.user_notifications)
-            .build();
-     NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment_user);
-     NavigationUI.setupActionBarWithNavController(this, navController, appBarConfiguration);
-     NavigationUI.setupWithNavController(navView, navController);
-}
+    private void removeFragments() {
+        fragmentManager.beginTransaction().remove(homeFragment).commitNow();
+        fragmentManager.beginTransaction().remove(dashboardFragment).commitNow();
+        fragmentManager.beginTransaction().remove(notificationsFragment).commitNow();
+    }
+
+    @Override
+    protected void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_user_profile);
+        initializeViews();
+        LoadFragment();
+        bottomNavigationView.setOnNavigationItemSelectedListener(this);
+    }
+
+    private void LoadFragment() {
+        fragmentManager.beginTransaction().add(R.id.nav_host_fragment_user, notificationsFragment, "3").hide(notificationsFragment).commit();
+        fragmentManager.beginTransaction().add(R.id.nav_host_fragment_user, dashboardFragment, "2").hide(dashboardFragment).commit();
+        fragmentManager.beginTransaction().add(R.id.nav_host_fragment_user, homeFragment, "1").commit();
+    }
+
+    private void initializeViews() {
+        bottomNavigationView = findViewById(R.id.nav_view_user);
+        homeFragment = new HomeFragment();
+        dashboardFragment = new DashboardFragment();
+        notificationsFragment = new NotificationsFragment();
+        activeFragment = homeFragment;
+    }
+
 }
