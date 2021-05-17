@@ -39,7 +39,9 @@ public class ListOrdersAdapter extends RecyclerView.Adapter<ListOrdersViewHolder
     public void onBindViewHolder(@NonNull ListOrdersViewHolder holder, int position) {
         final User user = (User) userList.values().toArray()[position];
         holder.setValues(user.getEmail());
+        Log.d("ORDERADAPTER",(String) userList.keySet().toArray()[position]);
         holder.setCurrentUserUUID((String) userList.keySet().toArray()[position]);
+        holder.setCurrentUserName(user.getUsername());
         holder.setPosition(position);
     }
 

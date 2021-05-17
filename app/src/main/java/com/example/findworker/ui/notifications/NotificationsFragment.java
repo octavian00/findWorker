@@ -61,6 +61,9 @@ public class NotificationsFragment extends Fragment {
 
     private void populateViews(WorkerOrders currentWorker) {
         List<Review> reviewList = currentWorker.getReviews();
+        if(currentWorker.getAverage() == null){
+            return;
+        }
         tv_average.setText(currentWorker.getAverage().toString());
         if(reviewList !=null) {
             ListReviewAdapter listReviewAdapter = new ListReviewAdapter(reviewList);

@@ -5,6 +5,7 @@ import java.util.ArrayList;
 public class WorkerOrders extends Worker {
     private ArrayList<String> pendingOrders;
     private ArrayList<Review> reviews;
+    private ArrayList<String> finishOrders;
     private Double average;
     private Integer numberOfReviews;
 
@@ -68,5 +69,15 @@ public class WorkerOrders extends Worker {
 
     public void setNumberOfReviews(Integer numberOfReviews) {
         this.numberOfReviews = numberOfReviews;
+    }
+
+    public ArrayList<String> getFinishOrders() {
+        return finishOrders;
+    }
+    public void addFinishOrder(String finishOrder){
+        if(this.finishOrders == null){
+            finishOrders = new ArrayList<>();
+        }
+        finishOrders.add(finishOrder);
     }
 }

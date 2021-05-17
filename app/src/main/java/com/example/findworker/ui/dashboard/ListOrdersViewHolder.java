@@ -23,6 +23,7 @@ public class ListOrdersViewHolder extends RecyclerView.ViewHolder {
     private TextView tv_userName;
     private Button btn_finish;
     private String currentUserUUID;
+    private String username;
     int position;
     private final String TAG="LISTORDERS";
     public ListOrdersViewHolder(@NonNull View itemView) {
@@ -40,12 +41,16 @@ public class ListOrdersViewHolder extends RecyclerView.ViewHolder {
     private void listeners(){
         btn_finish.setOnClickListener(v -> {
             Log.d(TAG,"START");
-            FinishOrder finishOrder = new FinishOrder(currentUserUUID,position);
+            Log.d(TAG,"USERNAME+"+username);
+            FinishOrder finishOrder = new FinishOrder(currentUserUUID,position,username);
             finishOrder.execute();
         });
     }
     public void setCurrentUserUUID(String currentUserUUID){
         this.currentUserUUID = currentUserUUID;
+    }
+    public void setCurrentUserName(String userName ){
+        this.username= userName;
     }
     public void setPosition(int posistion){
         this.position = posistion;
