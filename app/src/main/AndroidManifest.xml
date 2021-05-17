@@ -6,13 +6,15 @@
     <uses-permission android:name="android.permission.CALL_PHONE" />
 
     <application
-        android:allowBackup="true"
+        android:allowBackup="true" 
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.FindWorker">
-        <activity android:name=".profile.user.ui.notifications.CreateReview"></activity>
+        <activity
+            android:name=".profile.user.ui.notifications.CreateReview"
+            android:parentActivityName=".WorkerProfile" />
         <activity
             android:name=".WorkerProfile"
             android:label="@string/title_activity_worker_profile" />

@@ -5,13 +5,16 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
+    android:gravity="center"
     tools:context=".profile.user.ui.notifications.CreateReview">
     <EditText
+        android:layout_margin="20dp"
         android:id="@+id/edt_shortDescription"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:hint="short description about the problem"/>
     <EditText
+        android:layout_margin="20dp"
         android:id="@+id/edt_user_review"
         android:hint="share with us your feedback"
         android:layout_width="match_parent"
@@ -25,6 +28,8 @@
         android:isIndicator="false"
         android:layout_height="wrap_content"/>
     <Button
+        android:layout_margin="20dp"
+        android:background="@drawable/rounded_corner"
         android:id="@+id/btn_submit_review"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
