@@ -8,11 +8,17 @@
     android:layout_margin="20dp"
     tools:context=".SelectRole">
     <Button
+        android:textColor="@color/white"
+        android:layout_margin="20dp"
+        android:background="@drawable/round_button_mix_colors"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:onClick="workerUpdate"
         android:text="I am here to provide a service"/>
     <Button
+        android:textColor="@color/white"
+        android:layout_margin="20dp"
+        android:background="@drawable/rounded_corner"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:onClick="userProfile"

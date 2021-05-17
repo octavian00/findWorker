@@ -4,32 +4,75 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
+    android:gravity="center"
     tools:context=".FillData">
-    <EditText
-        android:id="@+id/edt_jobTitle"
-        android:layout_margin="10dp"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Job Title"/>
-    <EditText
-        android:id="@+id/edt_experience"
-        android:layout_margin="10dp"
+        android:orientation="horizontal">
+        <ImageView
+            android:layout_marginTop="25dp"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:src="@drawable/ic_job"/>
+        <EditText
+            android:id="@+id/edt_jobTitle"
+            android:layout_margin="10dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Job Title"/>
+    </LinearLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <ImageView
+            android:layout_marginTop="25dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_experience"/>
+        <EditText
+            android:id="@+id/edt_experience"
+            android:layout_margin="10dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Experience"/>
+    </LinearLayout>
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Experience"/>
-    <EditText
-        android:id="@+id/edt_location"
-        android:layout_margin="10dp"
+        android:orientation="horizontal">
+        <ImageView
+            android:layout_marginTop="25dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_location"/>
+        <EditText
+            android:id="@+id/edt_location"
+            android:layout_margin="10dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Location"/>
+    </LinearLayout>
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Location"/>
-    <EditText
-        android:id="@+id/edt_phoneNumber"
-        android:layout_margin="10dp"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="Phone Number"/>
+        android:orientation="horizontal"
+        android:layout_marginBottom="20dp">
+        <ImageView
+            android:layout_marginTop="25dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_phone"/>
+        <EditText
+            android:id="@+id/edt_phoneNumber"
+            android:layout_margin="10dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Phone Number"/>
+    </LinearLayout>
+
     <Button
+        android:background="@drawable/round_button_mix_colors"
         android:id="@+id/btn_submit_data"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
