@@ -78,10 +78,10 @@ public class  LoginActivity extends AppCompatActivity {
         initializeViews();
         initializeSharedPreference();
         getFromShared();
+        automaticAuthUser();
         initializeFirebaseInstances();
         facebookRegister();
         emailsFromDb();
-
         Log.e("TAG","ZUZUZ");
     }
     private void emailsFromDb(){
@@ -140,16 +140,36 @@ public class  LoginActivity extends AppCompatActivity {
     private void saveToSharedPreference(){
         SharedPreferences.Editor editor = prefs.edit();
         editor.putString("UUID",regiserUserUUID);
+        editor.putString("loggedUserName",loggedUserName);
+        editor.putString("loggedUserEmail",loggedUserEmail);
         editor.apply();
     }
     private void getFromShared(){
         String data = prefs.getString("UUID","");
-
+        String dataUsername = prefs.getString("loggedUserName","");
+        String dataEmail = prefs.getString("loggedUserEmail","");
         if(data.isEmpty()){
             Log.d(TAG,"getFromShared is empty");
         }else{
             regiserUserUUID =data;
             Log.d(TAG,"Found UUID :)");
+        }
+        if(!dataEmail.isEmpty())
+            loggedUserEmail = dataEmail;
+        if(!dataUsername.isEmpty())
+            loggedUserName = dataUsername;
+    }
+    private void automaticAuthUser(){
+        String userType = getUserTypeFromShared();
+        if(userType.isEmpty()){
+            return;
+        }
+        if(Integer.parseInt(userType)== 0){
+            nextActivity(UserProfile.class);
+            return;
+        }
+        if(Integer.parseInt(userType) == 1){
+            nextActivity(WorkerProfile.class);
         }
     }
     private String getUserTypeFromShared(){
@@ -165,11 +185,6 @@ public class  LoginActivity extends AppCompatActivity {
                     if(task.isSuccessful()) {
                         Log.d(TAG, "signIn with SUCCESS :)");
                         addUserToDB();
-//                        if(!isRoleActivity)
-//                        {
-//                            roleActivity();
-//                        }
-                        //
                         Log.d("ROLE=",isRoleActivity+"");
                         Log.d(TAG,"username "+loggedUserName);
                     }else{
@@ -237,22 +252,6 @@ public class  LoginActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         callbackManager.onActivityResult(requestCode, resultCode, data);
         super.onActivityResult(requestCode, resultCode, data);
-        //roleActivity();
-        // for read/write facebook user data
-//        GraphRequest graphRequest = GraphRequest.newMeRequest(AccessToken.getCurrentAccessToken(), (object, response) -> {
-//            Log.d("ZUZU graphRequest",object.toString());
-//            //deserialize Json response
-//            try {
-//                String name = object.getString("name");
-//                emailInput.setText(name);
-//            } catch (JSONException e) {
-//                e.printStackTrace();
-//            }
-//        });
-//        Bundle bundle = new Bundle();
-//        bundle.putString("fields","gender, name, id, first_name, last_name");//this fields comes from facebook devolopers
-//        graphRequest.setParameters(bundle);
-//        graphRequest.executeAsync();
         Log.d(TAG,"onResult");
         GraphRequest graphRequest = GraphRequest.newMyFriendsRequest(AccessToken.getCurrentAccessToken(),((objects, response) -> {
             Log.d("FRIENDS",objects.toString());
@@ -260,7 +259,6 @@ public class  LoginActivity extends AppCompatActivity {
             saveFacebookFriendsToShared();
         }));
         graphRequest.executeAsync();
-
     }
     AccessTokenTracker accessTokenTracker = new AccessTokenTracker() {
         @Override
@@ -291,10 +289,6 @@ public class  LoginActivity extends AppCompatActivity {
         final String email = emailInput.getText().toString();
         final String password = passwordInput.getText().toString();
 
-//        if(!inputCheck(email,password)){
-//            return;
-//
-//        }
         firebaseAuth.signInWithEmailAndPassword(email, password)
                 .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
                     @Override
