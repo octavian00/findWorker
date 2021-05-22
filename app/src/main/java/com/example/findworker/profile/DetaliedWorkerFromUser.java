@@ -43,7 +43,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-public class DetaliedWorkerFromUser extends AppCompatActivity implements Serializable {
+public class  DetaliedWorkerFromUser extends AppCompatActivity implements Serializable {
     private final static String TAG="DetaliedWorkerFromUser";
     private TextView tv_experience,tv_det_username,tv_det_location,tv_det_commomFriends,tv_det_average, tv_det_email;
     private Button btn_order,btn_call;

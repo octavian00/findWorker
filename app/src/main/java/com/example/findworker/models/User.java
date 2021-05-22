@@ -2,7 +2,7 @@ package com.example.findworker.models;
 
 public class User {
     protected String email;
-    private String username;
+    protected String username;
 
     public User() {
     }

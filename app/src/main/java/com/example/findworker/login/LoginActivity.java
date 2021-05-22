@@ -113,16 +113,13 @@ public class  LoginActivity extends AppCompatActivity {
         });
     }
     private void facebookRegister() {
-        Log.d(TAG,"facebookRegister");
         loginButton.setPermissions(Arrays.asList("email"));
         loginButton.registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
             @Override
             public void onSuccess(LoginResult loginResult) {
-                Log.d(TAG,"register SUCCESS");
+                Log.d(TAG,"SUCCES");
                 handleFacebookAccessToken(loginResult.getAccessToken());
-                Log.d(TAG,"Finish Handle");
             }
-
             @Override
             public void onCancel() {
                 Log.d(TAG,"register CANCEL");
@@ -133,6 +130,15 @@ public class  LoginActivity extends AppCompatActivity {
                 Log.e(TAG,"register ERROR");
             }
         });
+    }
+    private void handleFacebookAccessToken(AccessToken accessToken) {
+        AuthCredential credential = FacebookAuthProvider.getCredential(accessToken.getToken());
+        firebaseAuth.signInWithCredential(credential)
+                .addOnCompleteListener(this, task -> {
+                    if(task.isSuccessful())
+                        addUserToDB();
+                    nextAct();
+                });
     }
     private void initializeSharedPreference(){
         prefs =getSharedPreferences("preference.txt",MODE_PRIVATE);
@@ -175,25 +181,7 @@ public class  LoginActivity extends AppCompatActivity {
     private String getUserTypeFromShared(){
         return prefs.getString("userType","");
     }
-    private void handleFacebookAccessToken(AccessToken accessToken) {
-        Log.d(TAG,"handleFacebookAccessToken"+accessToken);
-        AuthCredential credential = FacebookAuthProvider.getCredential(accessToken.getToken());
-        Log.d(TAG,"credential"+credential);
-        Toast.makeText(getBaseContext(), credential.toString(), Toast.LENGTH_SHORT).show();
-        firebaseAuth.signInWithCredential(credential)
-                .addOnCompleteListener(this, task -> {
-                    if(task.isSuccessful()) {
-                        Log.d(TAG, "signIn with SUCCESS :)");
-                        addUserToDB();
-                        Log.d("ROLE=",isRoleActivity+"");
-                        Log.d(TAG,"username "+loggedUserName);
-                    }else{
-                        Log.d(TAG, "signIn with FAILED :(");
-                    }
-                    Log.d(TAG,"Finish Handle=2");
-                    nextAct();
-                });
-    }
+
 
     private void addUserToDB() {
         Log.d(TAG,"addUserToDB");
@@ -240,6 +228,7 @@ public class  LoginActivity extends AppCompatActivity {
     private void initializeViews(){
        // LoggedUserData.userNameList = new ArrayList<>();
         callbackManager = CallbackManager.Factory.create();
+        EditText emailInput;
         emailInput = findViewById(R.id.emailLogInput);
         passwordInput = findViewById(R.id.passwordLogInput);
 
@@ -263,11 +252,20 @@ public class  LoginActivity extends AppCompatActivity {
     AccessTokenTracker accessTokenTracker = new AccessTokenTracker() {
         @Override
         protected void onCurrentAccessTokenChanged(AccessToken oldAccessToken, AccessToken currentAccessToken) {
+            Log.d(TAG,"ACCES TOKEN");
             if(currentAccessToken == null){
                 LoginManager.getInstance().logOut();
+                logOut();
             }
         }
     };
+    private void logOut(){
+        SharedPreferences.Editor sharedPreferences =
+                getSharedPreferences("preference.txt", MODE_PRIVATE).edit();
+        sharedPreferences.clear().apply();
+        Intent intent = new Intent(this, LoginActivity.class);
+        startActivity(intent);
+    }
     private void saveFacebookFriendsToShared(){
         SharedPreferences.Editor editor = prefs.edit();
         editor.putString("facebookFriends",jsonObject.toString());
