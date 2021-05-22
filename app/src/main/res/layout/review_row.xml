@@ -5,22 +5,28 @@
     android:layout_height="wrap_content"
     android:orientation="vertical">
     <TextView
+        android:textSize="20sp"
         android:id="@+id/tv_review_shortProblem"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"/>
     <TextView
+        android:textSize="20sp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/tv_review_userFeedback"/>
     <TextView
+        android:textSize="20sp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/tv_review_username"/>
     <RatingBar
+        android:theme="@style/RatingBar"
         android:id="@+id/rb_review_userRating"
         android:layout_width="wrap_content"
         android:numStars="5"
         android:isIndicator="true"
+        android:scaleX="0.7"
+        android:scaleY="0.7"
         android:layout_height="wrap_content"/>
 
 </LinearLayout>
