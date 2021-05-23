@@ -20,6 +20,8 @@ import android.provider.Settings;
 import android.util.Log;
 import android.view.View;
 
+import com.example.findworker.helpers.FirebaseHelper;
+import com.example.findworker.helpers.LoggedUserData;
 import com.example.findworker.profile.UserProfile;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationCallback;
@@ -31,6 +33,8 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.atomic.AtomicBoolean;
+
+import static com.example.findworker.helpers.LoggedUserData.regiserUserUUID;
 
 public class SelectRole extends AppCompatActivity {
     FusedLocationProviderClient fusedLocationProviderClient;
@@ -130,6 +134,7 @@ public class SelectRole extends AppCompatActivity {
                 List<Address> addresses = geocoder.getFromLocation(
                         location.getLatitude(), location.getLongitude(), 1);
                 Log.d("LOCATION2", addresses.get(0).getAddressLine(0));
+                FirebaseHelper.userDatabaseReference.child(regiserUserUUID).child("location").setValue( addresses.get(0).getAddressLine(0));
             } catch (IOException e) {
                 e.printStackTrace();
             }
