@@ -15,6 +15,7 @@
 <!--        android:background="@drawable/rounded_corner"-->
 <!--        android:layout_width="match_parent"-->
 <!--        android:layout_height="wrap_content"/>-->
+
     <com.facebook.login.widget.LoginButton
         android:background="@drawable/rounded_corner"
         android:id="@+id/login_button_user"
