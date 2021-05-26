@@ -3,20 +3,20 @@ package com.example.findworker.models;
 import java.util.ArrayList;
 
 public class WorkerOrders extends Worker {
-    private ArrayList<String> pendingOrders;
+    private ArrayList<Order> pendingOrders;
     private ArrayList<Review> reviews;
     private ArrayList<String> finishOrders;
     private Double average;
     private Integer numberOfReviews;
 
     public WorkerOrders(){}
-    public WorkerOrders(String email, String username, String jobTitle,Integer experience,String location,ArrayList<String> pendingOrders){
+    public WorkerOrders(String email, String username, String jobTitle,Integer experience,String location,ArrayList<Order> pendingOrders){
         super(email,username,jobTitle,experience,location);
         this.pendingOrders = pendingOrders;
     }
 
     public WorkerOrders(String email, String username, String jobTitle, Integer experience,
-                        String location, String phoneNumber, ArrayList<String> pendingOrders,
+                        String location, String phoneNumber, ArrayList<Order> pendingOrders,
                         ArrayList<Review> reviews, Double average, Integer numberOfReviews) {
         super(email, username, jobTitle, experience, location, phoneNumber);
         this.pendingOrders = pendingOrders;
@@ -40,19 +40,19 @@ public class WorkerOrders extends Worker {
         return reviews;
     }
 
-    public ArrayList<String> getPendingOrders() {
+    public ArrayList<Order> getPendingOrders() {
         return pendingOrders;
     }
 
-    public void setPendingOrders(ArrayList<String> pendingOrders) {
+    public void setPendingOrders(ArrayList<Order> pendingOrders) {
         this.pendingOrders = pendingOrders;
     }
     public void removePendingOrders(int position){
         this.pendingOrders.remove(position);
     }
 
-    public  void addUserOrder(String currentUUID){
-        this.pendingOrders.add(currentUUID);
+    public  void addUserOrder(Order order){
+        this.pendingOrders.add(order);
     }
 
     public Double getAverage() {

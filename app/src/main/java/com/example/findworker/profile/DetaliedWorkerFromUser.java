@@ -294,7 +294,7 @@ public class DetaliedWorkerFromUser extends AppCompatActivity implements Seriali
 
     private void getCurrentUser(FireBaseCallBack fireBaseCallBack) {
         FirebaseHelper.getInstance();
-        FirebaseHelper.userDatabaseReference.addValueEventListener(new ValueEventListener() {
+        FirebaseHelper.userDatabaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 User user = snapshot.child(LoggedUserData.regiserUserUUID).getValue(User.class);
@@ -338,18 +338,17 @@ public class DetaliedWorkerFromUser extends AppCompatActivity implements Seriali
             @Override
             public void onCallBackUser(User user) {
                 Log.d("ATOMIC", date);
-                Order order = new Order(edt_problem.getText().toString(), user.getLocation(), user.getUsername(), date);
-//                FirebaseHelper.userDatabaseReference.child(LoggedUserData.)
-//                if (LoggedUserData.currentWorker.getPendingOrders() == null) {
-//                    ArrayList<String> newOrder = new ArrayList<>();
-//                    newOrder.add(LoggedUserData.regiserUserUUID);
-//                    LoggedUserData.currentWorker.setPendingOrders(newOrder);
-//                } else {
-//                    LoggedUserData.currentWorker.addUserOrder(LoggedUserData.regiserUserUUID);
-//                }
-//                WorkerOrders worker = LoggedUserData.currentWorker;
-//                FirebaseHelper.userDatabaseReference.child(userUUID).setValue(worker);
-//                finishAndRemoveTask();
+                Order order = new Order(edt_problem.getText().toString(), user.getLocation(), user.getUsername(), date,LoggedUserData.regiserUserUUID);
+                if (LoggedUserData.currentWorker.getPendingOrders() == null) {
+                    ArrayList<Order> newOrder = new ArrayList<>();
+                    newOrder.add(order);
+                    LoggedUserData.currentWorker.setPendingOrders(newOrder);
+                } else {
+                    LoggedUserData.currentWorker.addUserOrder(order);
+                }
+                WorkerOrders worker = LoggedUserData.currentWorker;
+                FirebaseHelper.userDatabaseReference.child(userUUID).setValue(worker);
+                finishAndRemoveTask();
             }
         });
     }

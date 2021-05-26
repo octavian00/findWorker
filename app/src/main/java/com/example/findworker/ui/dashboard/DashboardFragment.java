@@ -15,6 +15,7 @@ import com.example.findworker.FireBaseCallBack;
 import com.example.findworker.R;
 import com.example.findworker.helpers.FirebaseHelper;
 import com.example.findworker.helpers.LoggedUserData;
+import com.example.findworker.models.Order;
 import com.example.findworker.models.User;
 import com.example.findworker.models.UserReview;
 import com.example.findworker.models.Worker;
@@ -57,11 +58,11 @@ public class DashboardFragment extends Fragment {
                 Log.d(TAG,LoggedUserData.regiserUserUUID);
                 currentWorker = snapshot.child(LoggedUserData.regiserUserUUID).getValue(WorkerOrders.class);
                 if(currentWorker != null && currentWorker.getPendingOrders()!=null) {
-                    for(String currentUserUUID:currentWorker.getPendingOrders()) {
+                    for(Order currentUserUUID:currentWorker.getPendingOrders()) {
                         Log.d(TAG, "currentUUID" + currentUserUUID);
-                        User currentUser = snapshot.child(currentUserUUID).getValue(User.class);
+                        User currentUser = snapshot.child(currentUserUUID.getUserUUID()).getValue(User.class);
                         if (currentUser != null) {
-                            users.put(currentUserUUID,currentUser);
+                            users.put(currentUserUUID.getUserUUID(),currentUser);
                         } else {
                             Log.d(TAG, "NOT USER");
                         }
