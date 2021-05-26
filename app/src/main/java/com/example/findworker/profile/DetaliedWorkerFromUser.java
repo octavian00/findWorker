@@ -1,6 +1,7 @@
 package com.example.findworker.profile;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
@@ -14,7 +15,10 @@ import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
 import android.widget.Button;
+import android.widget.CalendarView;
+import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -39,6 +43,7 @@ import org.json.JSONException;
 import java.io.Serializable;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -46,11 +51,15 @@ import java.util.stream.Collectors;
 public class  DetaliedWorkerFromUser extends AppCompatActivity implements Serializable {
     private final static String TAG="DetaliedWorkerFromUser";
     private TextView tv_experience,tv_det_username,tv_det_location,tv_det_commomFriends,tv_det_average, tv_det_email;
-    private Button btn_order,btn_call;
+    private Button btn_order,btn_call,btn_confirmOrder;
     private RecyclerView rv;
     private static final int REQUEST_CALL = 1;
     String userUUID;
     SharedPreferences sharedPreferences;
+    private AlertDialog.Builder dialogBuilder;
+    private AlertDialog dialog;
+    private EditText edt_problem;
+    private CalendarView calendar;
     private static DecimalFormat df2 = new DecimalFormat("#.##");
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -134,19 +143,20 @@ public class  DetaliedWorkerFromUser extends AppCompatActivity implements Serial
     }
     private void listener(){
         btn_order.setOnClickListener(v -> {
-
-            if(LoggedUserData.currentWorker.getPendingOrders() == null)
-            {
-                ArrayList<String> newOrder= new ArrayList<>();
-                newOrder.add(LoggedUserData.regiserUserUUID);
-                LoggedUserData.currentWorker.setPendingOrders(newOrder);
-            }
-            else{
-                LoggedUserData.currentWorker.addUserOrder(LoggedUserData.regiserUserUUID);
-            }
-            WorkerOrders worker = LoggedUserData.currentWorker;
-            FirebaseHelper.userDatabaseReference.child(userUUID).setValue(worker);
-            finishAndRemoveTask();
+             
+//            if(LoggedUserData.currentWorker.getPendingOrders() == null)
+//            {
+//                ArrayList<String> newOrder= new ArrayList<>();
+//                newOrder.add(LoggedUserData.regiserUserUUID);
+//                LoggedUserData.currentWorker.setPendingOrders(newOrder);
+//            }
+//            else{
+//                LoggedUserData.currentWorker.addUserOrder(LoggedUserData.regiserUserUUID);
+//            }
+//            WorkerOrders worker = LoggedUserData.currentWorker;
+//            FirebaseHelper.userDatabaseReference.child(userUUID).setValue(worker);
+//            finishAndRemoveTask();
+            createNewContactDialog();
         });
         btn_call.setOnClickListener(v ->
             {makePhoneCall(LoggedUserData.currentWorker.getPhoneNumber());});
@@ -235,5 +245,19 @@ public class  DetaliedWorkerFromUser extends AppCompatActivity implements Serial
                 Toast.makeText(this, "Permission DENIED", Toast.LENGTH_SHORT).show();
             }
         }
+    }
+    public void createNewContactDialog(){
+        dialogBuilder = new AlertDialog.Builder(this);
+        final View contactView = getLayoutInflater().inflate(R.layout.popup,null);
+        edt_problem = contactView.findViewById(R.id.edt_problem_popup);
+        btn_confirmOrder = contactView.findViewById(R.id.btn_confirm_order);
+        calendar =contactView.findViewById(R.id.CalendarView);
+        dialogBuilder.setView(contactView);
+        dialog = dialogBuilder.create();
+        dialog.show();
+        calendar.setOnDateChangeListener((view, year, month, dayOfMonth) -> {
+            String date = dayOfMonth+"/"+month+"/"+year;
+            Log.d("POPUP", date);
+        });
     }
 }

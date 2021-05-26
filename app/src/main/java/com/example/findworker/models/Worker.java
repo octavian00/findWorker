@@ -3,7 +3,7 @@ package com.example.findworker.models;
 import java.io.Serializable;
 import java.util.ArrayList;
 
-public class Worker extends User implements Serializable {
+public class  Worker extends User implements Serializable {
     private String jobTitle;
     private Integer experience;
     private String location;
