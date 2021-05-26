@@ -112,6 +112,11 @@ public class DashboardFragment extends Fragment {
             public void onCallBackUserReview(UserReview userReview) {
 
             }
+
+            @Override
+            public void onCallBackUser(User user) {
+
+            }
         });
     }
 }

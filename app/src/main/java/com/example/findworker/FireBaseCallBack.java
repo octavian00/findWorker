@@ -14,4 +14,5 @@ public interface FireBaseCallBack {
     void onCallBackListOfClients(Map<String,User> users);
     void onCallBackMapidEmails(Map<String,Worker> idAndEmails);
     void onCallBackUserReview(UserReview userReview);
+    void onCallBackUser(User user);
 }

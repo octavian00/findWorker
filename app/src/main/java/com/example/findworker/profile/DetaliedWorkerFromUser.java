@@ -27,6 +27,7 @@ import com.example.findworker.FireBaseCallBack;
 import com.example.findworker.R;
 import com.example.findworker.helpers.FirebaseHelper;
 import com.example.findworker.helpers.LoggedUserData;
+import com.example.findworker.models.Order;
 import com.example.findworker.models.Review;
 import com.example.findworker.models.User;
 import com.example.findworker.models.UserReview;
@@ -43,15 +44,15 @@ import org.json.JSONException;
 import java.io.Serializable;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
-public class  DetaliedWorkerFromUser extends AppCompatActivity implements Serializable {
-    private final static String TAG="DetaliedWorkerFromUser";
-    private TextView tv_experience,tv_det_username,tv_det_location,tv_det_commomFriends,tv_det_average, tv_det_email;
-    private Button btn_order,btn_call,btn_confirmOrder;
+public class DetaliedWorkerFromUser extends AppCompatActivity implements Serializable {
+    private final static String TAG = "DetaliedWorkerFromUser";
+    private TextView tv_experience, tv_det_username, tv_det_location, tv_det_commomFriends, tv_det_average, tv_det_email;
+    private Button btn_order, btn_call, btn_confirmOrder;
     private RecyclerView rv;
     private static final int REQUEST_CALL = 1;
     String userUUID;
@@ -61,6 +62,7 @@ public class  DetaliedWorkerFromUser extends AppCompatActivity implements Serial
     private EditText edt_problem;
     private CalendarView calendar;
     private static DecimalFormat df2 = new DecimalFormat("#.##");
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -73,33 +75,38 @@ public class  DetaliedWorkerFromUser extends AppCompatActivity implements Serial
         differenceBetweenLists();
 
     }
-    private void initializeSharedPreference(){
-        sharedPreferences = getSharedPreferences("preference.txt",MODE_PRIVATE);
+
+    private void initializeSharedPreference() {
+        sharedPreferences = getSharedPreferences("preference.txt", MODE_PRIVATE);
     }
-    private String getUserFriendsFromShared(){
-        return sharedPreferences.getString("facebookFriends","");
+
+    private String getUserFriendsFromShared() {
+        return sharedPreferences.getString("facebookFriends", "");
     }
-    private List<String> listFacebookFriends(){
+
+    private List<String> listFacebookFriends() {
         List<String> facebookFriendsList = new ArrayList<>();
-        try{
+        try {
             JSONArray jsonArray = new JSONArray(getUserFriendsFromShared());
             DeserializeJsonArray deserializeJsonArray = new DeserializeJsonArray(jsonArray);
             facebookFriendsList = deserializeJsonArray.convertToStringList();
-            for(String friend:facebookFriendsList){
-                Log.d(TAG,"friends="+friend);
+            for (String friend : facebookFriendsList) {
+                Log.d(TAG, "friends=" + friend);
             }
-        }catch (JSONException jsonException){
+        } catch (JSONException jsonException) {
             jsonException.printStackTrace();
         }
         return facebookFriendsList;
     }
-    private void getData(){
+
+    private void getData() {
         userUUID = getIntent().getStringExtra("UUID");
-        Log.d(TAG,LoggedUserData.currentWorker.getEmail());
-        Log.d(TAG,"registerUUID="+LoggedUserData.regiserUserUUID);
-        Log.d(TAG,"userUUID="+userUUID);
+        Log.d(TAG, LoggedUserData.currentWorker.getEmail());
+        Log.d(TAG, "registerUUID=" + LoggedUserData.regiserUserUUID);
+        Log.d(TAG, "userUUID=" + userUUID);
     }
-    private void initializeViews(){
+
+    private void initializeViews() {
         tv_experience = findViewById(R.id.tv_det_experiencee);
         tv_det_average = findViewById(R.id.tv_det_average);
         tv_det_commomFriends = findViewById(R.id.tv_det_commomFriends);
@@ -108,42 +115,44 @@ public class  DetaliedWorkerFromUser extends AppCompatActivity implements Serial
         tv_det_email = findViewById(R.id.tv_det_email);
         btn_order = findViewById(R.id.btn_order);
         btn_call = findViewById(R.id.btn_call);
-        rv=findViewById(R.id.rv_det_reviews);
+        rv = findViewById(R.id.rv_det_reviews);
     }
-    private void populateCommonFrieds(List<String> result){
+
+    private void populateCommonFrieds(List<String> result) {
         result = result.stream().distinct().collect(Collectors.toList());
         String json = new Gson().toJson(result);
-        tv_det_commomFriends.setText("Friends who already collaborate: "+json);
+        tv_det_commomFriends.setText("Friends who already collaborate: " + json);
     }
 
     private void populateBasicViews(WorkerOrders workerOrders) {
-        if(workerOrders.getExperience() !=null){
-            tv_experience.setText("Experience: "+workerOrders.getExperience());
+        if (workerOrders.getExperience() != null) {
+            tv_experience.setText("Experience: " + workerOrders.getExperience());
         }
-        if(workerOrders.getEmail() !=null){
-            tv_det_email.setText("Email: "+workerOrders.getEmail());
+        if (workerOrders.getEmail() != null) {
+            tv_det_email.setText("Email: " + workerOrders.getEmail());
         }
-        if(workerOrders.getUsername() !=null){
-            tv_det_username.setText("Username: "+workerOrders.getUsername());
+        if (workerOrders.getUsername() != null) {
+            tv_det_username.setText("Username: " + workerOrders.getUsername());
         }
-        if(workerOrders.getLocation() !=null){
-            tv_det_location.setText("Location: "+workerOrders.getLocation());
+        if (workerOrders.getLocation() != null) {
+            tv_det_location.setText("Location: " + workerOrders.getLocation());
         }
-        if(workerOrders.getAverage() !=null) {
+        if (workerOrders.getAverage() != null) {
             tv_det_average.setText("Rating: " + df2.format(workerOrders.getAverage()));
         }
     }
 
-    private void setRecyclerView(List<Review> reviewList){
-        if(reviewList !=null) {
+    private void setRecyclerView(List<Review> reviewList) {
+        if (reviewList != null) {
             ListReviewAdapter listReviewAdapter = new ListReviewAdapter(reviewList);
             rv.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
             rv.setAdapter(listReviewAdapter);
         }
     }
-    private void listener(){
+
+    private void listener() {
         btn_order.setOnClickListener(v -> {
-             
+
 //            if(LoggedUserData.currentWorker.getPendingOrders() == null)
 //            {
 //                ArrayList<String> newOrder= new ArrayList<>();
@@ -159,10 +168,13 @@ public class  DetaliedWorkerFromUser extends AppCompatActivity implements Serial
             createNewContactDialog();
         });
         btn_call.setOnClickListener(v ->
-            {makePhoneCall(LoggedUserData.currentWorker.getPhoneNumber());});
+        {
+            makePhoneCall(LoggedUserData.currentWorker.getPhoneNumber());
+        });
 
     }
-    private void getListOfReviews(FireBaseCallBack fireBaseCallBack){
+
+    private void getListOfReviews(FireBaseCallBack fireBaseCallBack) {
         FirebaseHelper.userDatabaseReference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
@@ -176,12 +188,13 @@ public class  DetaliedWorkerFromUser extends AppCompatActivity implements Serial
             }
         });
     }
-    private void differenceBetweenLists(){
+
+    private void differenceBetweenLists() {
         getListOfReviews(new FireBaseCallBack() {
             @Override
             public void onCallBack(WorkerOrders worker) {
                 populateBasicViews(worker);
-                if(worker.getReviews() != null) {
+                if (worker.getReviews() != null) {
                     Log.d(TAG, "reviews size=" + worker.getReviews().size());
                     List<String> usernamesFB = worker.getReviews()
                             .stream().map(Review::getUsername)
@@ -218,15 +231,20 @@ public class  DetaliedWorkerFromUser extends AppCompatActivity implements Serial
             public void onCallBackUserReview(UserReview userReview) {
 
             }
+
+            @Override
+            public void onCallBackUser(User user) {
+
+            }
         });
     }
 
-    private void makePhoneCall(String number){
-        if(number.trim().length() > 0){
-            if(ContextCompat.checkSelfPermission(this, Manifest.permission.CALL_PHONE) != PackageManager.PERMISSION_GRANTED){
+    private void makePhoneCall(String number) {
+        if (number.trim().length() > 0) {
+            if (ContextCompat.checkSelfPermission(this, Manifest.permission.CALL_PHONE) != PackageManager.PERMISSION_GRANTED) {
                 ActivityCompat.requestPermissions(DetaliedWorkerFromUser.this,
-                        new String[]{Manifest.permission.CALL_PHONE},REQUEST_CALL);
-            }else{
+                        new String[]{Manifest.permission.CALL_PHONE}, REQUEST_CALL);
+            } else {
                 String dial = "tel:" + number;
                 startActivity(new Intent(Intent.ACTION_CALL, Uri.parse(dial)));
             }
@@ -246,18 +264,93 @@ public class  DetaliedWorkerFromUser extends AppCompatActivity implements Serial
             }
         }
     }
-    public void createNewContactDialog(){
+
+    public void createNewContactDialog() {
         dialogBuilder = new AlertDialog.Builder(this);
-        final View contactView = getLayoutInflater().inflate(R.layout.popup,null);
+        final View contactView = getLayoutInflater().inflate(R.layout.popup, null);
         edt_problem = contactView.findViewById(R.id.edt_problem_popup);
         btn_confirmOrder = contactView.findViewById(R.id.btn_confirm_order);
-        calendar =contactView.findViewById(R.id.CalendarView);
+        calendar = contactView.findViewById(R.id.CalendarView);
         dialogBuilder.setView(contactView);
         dialog = dialogBuilder.create();
         dialog.show();
+        AtomicReference<String> date = new AtomicReference<>();
         calendar.setOnDateChangeListener((view, year, month, dayOfMonth) -> {
-            String date = dayOfMonth+"/"+month+"/"+year;
-            Log.d("POPUP", date);
+            String date1 = dayOfMonth + "/" + month + "/" + year;
+
+            if (date1 != null) {
+                date.set(date1);
+                Log.d("DATA", date1);
+            }
+            // Log.d("POPUP", date.get());
+        });
+        btn_confirmOrder.setOnClickListener(v -> {
+            if (date.get() != null) {
+                Log.e("ZUZU", "ZUZU");
+                getCurrentUserCallback(date.get());
+            }
+        });
+    }
+
+    private void getCurrentUser(FireBaseCallBack fireBaseCallBack) {
+        FirebaseHelper.getInstance();
+        FirebaseHelper.userDatabaseReference.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                User user = snapshot.child(LoggedUserData.regiserUserUUID).getValue(User.class);
+                fireBaseCallBack.onCallBackUser(user);
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
+    }
+
+    private void getCurrentUserCallback(String date) {
+        getCurrentUser(new FireBaseCallBack() {
+            @Override
+            public void onCallBack(WorkerOrders worker) {
+
+            }
+
+            @Override
+            public void onCallBackListOfWorkers(List<WorkerOrders> worker) {
+
+            }
+
+            @Override
+            public void onCallBackListOfClients(Map<String, User> users) {
+
+            }
+
+            @Override
+            public void onCallBackMapidEmails(Map<String, Worker> idAndEmails) {
+
+            }
+
+            @Override
+            public void onCallBackUserReview(UserReview userReview) {
+
+            }
+
+            @Override
+            public void onCallBackUser(User user) {
+                Log.d("ATOMIC", date);
+                Order order = new Order(edt_problem.getText().toString(), user.getLocation(), user.getUsername(), date);
+//                FirebaseHelper.userDatabaseReference.child(LoggedUserData.)
+//                if (LoggedUserData.currentWorker.getPendingOrders() == null) {
+//                    ArrayList<String> newOrder = new ArrayList<>();
+//                    newOrder.add(LoggedUserData.regiserUserUUID);
+//                    LoggedUserData.currentWorker.setPendingOrders(newOrder);
+//                } else {
+//                    LoggedUserData.currentWorker.addUserOrder(LoggedUserData.regiserUserUUID);
+//                }
+//                WorkerOrders worker = LoggedUserData.currentWorker;
+//                FirebaseHelper.userDatabaseReference.child(userUUID).setValue(worker);
+//                finishAndRemoveTask();
+            }
         });
     }
 }

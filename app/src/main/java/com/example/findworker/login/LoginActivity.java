@@ -110,6 +110,11 @@ public class  LoginActivity extends AppCompatActivity {
             public void onCallBackUserReview(UserReview userReview) {
 
             }
+
+            @Override
+            public void onCallBackUser(User user) {
+
+            }
         });
     }
     private void facebookRegister() {

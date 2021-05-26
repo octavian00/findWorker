@@ -124,6 +124,11 @@ public class CreateReview extends AppCompatActivity {
             public void onCallBackUserReview(UserReview userReview) {
                 userRev = userReview;
             }
+
+            @Override
+            public void onCallBackUser(User user) {
+
+            }
         });
          new CountDownTimer(1000,1){
              @Override

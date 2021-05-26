@@ -41,6 +41,7 @@ public class DashboardFragment extends Fragment {
     }
     public void getAllWorkers(FireBaseCallBack fireBaseCallBack) {
         ArrayList<WorkerOrders> workers = new ArrayList<>();
+        FirebaseHelper.getInstance();
         FirebaseHelper.userDatabaseReference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
@@ -85,6 +86,11 @@ public class DashboardFragment extends Fragment {
 
             @Override
             public void onCallBackUserReview(UserReview userReview) {
+
+            }
+
+            @Override
+            public void onCallBackUser(User user) {
 
             }
         });
