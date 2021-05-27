@@ -5,14 +5,14 @@ public class Order {
     String location;
     String person;
     String date;
-    String userUUID;
+    String userName;
 
-    public Order(String description, String location, String person, String date, String userUUID) {
+    public Order(String description, String location, String person, String date, String userName) {
         this.description = description;
         this.location = location;
         this.person = person;
         this.date = date;
-        this.userUUID = userUUID;
+        this.userName = userName;
     }
 
     public Order() {
@@ -34,7 +34,7 @@ public class Order {
         return date;
     }
 
-    public String getUserUUID() {
-        return userUUID;
+    public String getUserName() {
+        return userName;
     }
 }

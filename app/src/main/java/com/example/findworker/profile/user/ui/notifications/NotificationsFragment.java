@@ -59,8 +59,10 @@ public class NotificationsFragment extends Fragment {
                         for (WorkerOrders w : workersForReview) {
                             Log.d("WORKERS", w.getEmail());
                         }
-                        tv_leaveReview.setText("Nothing for review");
+                       // tv_leaveReview.setText("Nothing for review");
                         setRecyclerView(workersForReview);
+                    }else{
+                        tv_leaveReview.setText("Nothing for review");
                     }
                 }
 

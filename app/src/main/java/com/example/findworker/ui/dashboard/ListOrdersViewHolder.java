@@ -20,7 +20,7 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.ValueEventListener;
 
 public class ListOrdersViewHolder extends RecyclerView.ViewHolder {
-    private TextView tv_userName;
+    private TextView tv_userName,tv_location, tv_date,tv_problem;
     private Button btn_finish;
     private String currentUserUUID;
     private String username;
@@ -32,11 +32,17 @@ public class ListOrdersViewHolder extends RecyclerView.ViewHolder {
         listeners();
     }
     private void initializeViews(){
+        tv_location = itemView.findViewById(R.id.tv_LocationOrder);
+        tv_date = itemView.findViewById(R.id.tv_dateOrder);
+        tv_problem = itemView.findViewById(R.id.tv_shortDescriptionOrder);
         tv_userName = itemView.findViewById(R.id.tv_userNameOrder);
         btn_finish = itemView.findViewById(R.id.btn_done);
     }
-    public void setValues(String name){
+    public void setValues(String name,String location, String date, String problem){
         tv_userName.setText(name);
+        tv_problem.setText(problem);
+        tv_date.setText(date);
+        tv_location.setText(location);
     }
     private void listeners(){
         btn_finish.setOnClickListener(v -> {

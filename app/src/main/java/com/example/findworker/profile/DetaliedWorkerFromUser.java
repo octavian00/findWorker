@@ -338,7 +338,8 @@ public class DetaliedWorkerFromUser extends AppCompatActivity implements Seriali
             @Override
             public void onCallBackUser(User user) {
                 Log.d("ATOMIC", date);
-                Order order = new Order(edt_problem.getText().toString(), user.getLocation(), user.getUsername(), date,LoggedUserData.regiserUserUUID);
+                Log.d("ATOMOIC LOCATION",user.getLocation());
+                Order order = new Order(edt_problem.getText().toString(), user.getLocation(), LoggedUserData.regiserUserUUID, date,LoggedUserData.loggedUserName);
                 if (LoggedUserData.currentWorker.getPendingOrders() == null) {
                     ArrayList<Order> newOrder = new ArrayList<>();
                     newOrder.add(order);
@@ -348,6 +349,7 @@ public class DetaliedWorkerFromUser extends AppCompatActivity implements Seriali
                 }
                 WorkerOrders worker = LoggedUserData.currentWorker;
                 FirebaseHelper.userDatabaseReference.child(userUUID).setValue(worker);
+                dialog.dismiss();
                 finishAndRemoveTask();
             }
         });

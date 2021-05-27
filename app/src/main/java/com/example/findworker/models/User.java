@@ -3,7 +3,7 @@ package com.example.findworker.models;
 public class User {
     protected String email;
     protected String username;
-    protected String Location;
+    protected String location;
 
     public User() {
     }
@@ -15,11 +15,11 @@ public class User {
     public User(String email, String username, String location) {
         this.email = email;
         this.username = username;
-        Location = location;
+        location = location;
     }
 
     public String getLocation() {
-        return Location;
+        return location;
     }
 
     public User(String email, String username) {

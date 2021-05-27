@@ -12,7 +12,7 @@
         android:textAlignment="center"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Leave a review"/>
+        android:text="Please tap inside the rectangle for review"/>
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rv_worker_review"
         android:layout_width="match_parent"

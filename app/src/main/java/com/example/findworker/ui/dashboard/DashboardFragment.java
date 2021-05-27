@@ -54,35 +54,38 @@ public class DashboardFragment extends Fragment {
         FirebaseHelper.userDatabaseReference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
-                users.clear();
-                Log.d(TAG,LoggedUserData.regiserUserUUID);
-                currentWorker = snapshot.child(LoggedUserData.regiserUserUUID).getValue(WorkerOrders.class);
-                if(currentWorker != null && currentWorker.getPendingOrders()!=null) {
-                    for(Order currentUserUUID:currentWorker.getPendingOrders()) {
-                        Log.d(TAG, "currentUUID" + currentUserUUID);
-                        User currentUser = snapshot.child(currentUserUUID.getUserUUID()).getValue(User.class);
-                        if (currentUser != null) {
-                            users.put(currentUserUUID.getUserUUID(),currentUser);
-                        } else {
-                            Log.d(TAG, "NOT USER");
-                        }
-                    }
-                    fireBaseCallBack.onCallBackListOfClients(users);
-                }
+//                users.clear();
+//                Log.d(TAG,LoggedUserData.regiserUserUUID);
+//                currentWorker = snapshot.child(LoggedUserData.regiserUserUUID).getValue(WorkerOrders.class);
+//                if(currentWorker != null && currentWorker.getPendingOrders()!=null) {
+//                    for(Order currentUserUUID:currentWorker.getPendingOrders()) {
+//                        Log.d(TAG, "currentUUID" + currentUserUUID);
+//                        User currentUser = snapshot.child(currentUserUUID.getUserUUID()).getValue(User.class);
+//                        if (currentUser != null) {
+//                            users.put(currentUserUUID.getUserUUID(),currentUser);
+//                        } else {
+//                            Log.d(TAG, "NOT USER");
+//                        }
+//                    }
+//                    fireBaseCallBack.onCallBackListOfClients(users);
+//                }
+                 WorkerOrders workerOrders = snapshot.child(LoggedUserData.regiserUserUUID).getValue(WorkerOrders.class);
+                 fireBaseCallBack.onCallBack(workerOrders);
             }
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
 
             }
         });
-       setRecyclerView();
+       //setRecyclerView();
     }
     private void setRecyclerView(){
-        if(users.size() == 0) {
-            Log.d(TAG, "recyclerv SIZE LIST=" + users.size());
+        if(currentWorker.getPendingOrders() == null){
+            Log.d("DASHBOARD ","NULL");
             return;
         }
-        listOrdersAdapter = new ListOrdersAdapter(users);
+        Log.d("DASHBOARD ",currentWorker.getPendingOrders().size()+"");
+        listOrdersAdapter = new ListOrdersAdapter(currentWorker.getPendingOrders());
         rv.setLayoutManager(new LinearLayoutManager(getContext()));
         rv.setAdapter(listOrdersAdapter);
     }
@@ -90,7 +93,8 @@ public class DashboardFragment extends Fragment {
         getPendinOrders(new FireBaseCallBack() {
             @Override
             public void onCallBack(WorkerOrders worker) {
-
+                currentWorker = worker;
+                setRecyclerView();
             }
 
             @Override
@@ -100,8 +104,7 @@ public class DashboardFragment extends Fragment {
 
             @Override
             public void onCallBackListOfClients(Map<String,User> userList) {
-                users=userList;
-                setRecyclerView();
+
             }
 
             @Override
