@@ -29,6 +29,7 @@
         android:theme="@style/RatingBar"
         android:layout_height="wrap_content"/>
     <Button
+        android:textColor="@color/white"
         android:layout_margin="20dp"
         android:background="@drawable/rounded_corner"
         android:id="@+id/btn_submit_review"

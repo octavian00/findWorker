@@ -26,13 +26,14 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.ValueEventListener;
 
+import java.text.DecimalFormat;
 import java.util.List;
 
 public class NotificationsFragment extends Fragment {
 
     private TextView tv_average;
     private RecyclerView rv;
-
+    private static DecimalFormat df2 = new DecimalFormat("#.#");
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
         View root = inflater.inflate(R.layout.fragment_worker_notifications, container, false);
@@ -64,7 +65,7 @@ public class NotificationsFragment extends Fragment {
         if(currentWorker.getAverage() == null){
             return;
         }
-        tv_average.setText(currentWorker.getAverage().toString());
+        tv_average.setText(df2.format(currentWorker.getAverage()));
         if(reviewList !=null) {
             ListReviewAdapter listReviewAdapter = new ListReviewAdapter(reviewList);
             rv.setLayoutManager(new LinearLayoutManager(getContext()));

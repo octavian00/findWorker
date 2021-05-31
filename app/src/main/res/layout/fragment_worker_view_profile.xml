@@ -72,11 +72,20 @@
     </LinearLayout>
 
     <Button
+        android:textColor="@color/white"
         android:background="@drawable/round_button_mix_colors"
         android:id="@+id/btn_submit_data"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Submit"
         android:layout_margin="30dp"/>
+    <com.facebook.login.widget.LoginButton
+        android:background="@drawable/rounded_corner"
+        android:id="@+id/login_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="30dp"
+        android:layout_marginBottom="30dp" />
 
 </LinearLayout>

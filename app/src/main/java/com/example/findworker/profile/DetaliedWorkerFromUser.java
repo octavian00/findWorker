@@ -61,7 +61,7 @@ public class DetaliedWorkerFromUser extends AppCompatActivity implements Seriali
     private AlertDialog dialog;
     private EditText edt_problem;
     private CalendarView calendar;
-    private static DecimalFormat df2 = new DecimalFormat("#.##");
+    private static DecimalFormat df2 = new DecimalFormat("#.#");
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
